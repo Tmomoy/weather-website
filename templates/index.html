@@ -22,7 +22,7 @@ text-align:center;
 background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
-width:450px;
+width:500px;
 box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
@@ -42,21 +42,11 @@ background:#ffcc00;
 cursor:pointer;
 margin-top:15px;
 font-weight:bold;
-transition:0.2s;
-}
-
-button:hover{
-background:#ffd633;
-transform:scale(1.05);
 }
 
 .location-btn{
 background:#00e5ff;
 color:black;
-}
-
-.location-btn:hover{
-background:#66f2ff;
 }
 
 .weather-icon{
@@ -72,37 +62,26 @@ border-radius:15px;
 
 .forecast{
 display:flex;
-justify-content:center;
-flex-wrap:wrap;
-margin-top:20px;
+overflow-x:auto;
 gap:10px;
+margin-top:15px;
 }
 
 .day{
 background:rgba(255,255,255,0.2);
 padding:10px;
 border-radius:10px;
-width:90px;
-font-size:14px;
-transition:0.2s;
-}
-
-.day:hover{
-transform:scale(1.08);
-background:rgba(255,255,255,0.35);
+min-width:80px;
+text-align:center;
 }
 
 .day img{
-width:50px;
+width:40px;
 }
 
-@media (max-width:500px){
-
-.container{
-width:90%;
-padding:25px;
-}
-
+.section-title{
+margin-top:25px;
+font-size:18px;
 }
 
 </style>
@@ -158,29 +137,53 @@ padding:25px;
 <img class="weather-icon"
 src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
-<p>🌡 溫度 {{ weather.temp }} °C</p>
-<p>☁️ {{ weather.description }}</p>
+<p>🌡 {{ weather.temp }}°C</p>
+<p>{{ weather.description }}</p>
 <p>💧 濕度 {{ weather.humidity }}%</p>
 
 </div>
 
 {% endif %}
 
-{% if forecast %}
+{% if today %}
 
-<h3>📅 天氣預報</h3>
+<h3 class="section-title">⏰ 今日24小時</h3>
 
 <div class="forecast">
 
-{% for f in forecast %}
+{% for t in today %}
 
 <div class="day">
 
-<p>{{ f.time }}</p>
+<p>{{ t.time }}</p>
 
-<img src="https://openweathermap.org/img/wn/{{ f.icon }}@2x.png">
+<img src="https://openweathermap.org/img/wn/{{ t.icon }}@2x.png">
 
-<p>{{ f.temp }}°C</p>
+<p>{{ t.temp }}°C</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+{% if week %}
+
+<h3 class="section-title">📅 未來7天</h3>
+
+<div class="forecast">
+
+{% for d in week %}
+
+<div class="day">
+
+<p>{{ d.date }}</p>
+
+<img src="https://openweathermap.org/img/wn/{{ d.icon }}@2x.png">
+
+<p>{{ d.temp }}°C</p>
 
 </div>
 

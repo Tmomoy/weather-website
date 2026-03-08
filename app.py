@@ -9,7 +9,7 @@ API_KEY = os.environ.get("WEATHER_API_KEY")
 if not API_KEY:
     print("⚠️ WARNING: WEATHER_API_KEY not set")
 
-# 英文轉中文城市
+# 英文轉中文
 city_translate = {
     "Taipei": "台北",
     "New Taipei": "新北",
@@ -34,44 +34,22 @@ city_translate = {
 }
 
 # 中文轉英文
-city_map = {
-    "台北": "Taipei",
-    "臺北": "Taipei",
-    "新北": "New Taipei",
-    "桃園": "Taoyuan",
-    "台中": "Taichung",
-    "臺中": "Taichung",
-    "台南": "Tainan",
-    "高雄": "Kaohsiung",
-    "基隆": "Keelung",
-    "新竹": "Hsinchu",
-    "嘉義": "Chiayi",
-    "屏東": "Pingtung",
-    "宜蘭": "Yilan",
-    "花蓮": "Hualien",
-    "台東": "Taitung",
-    "南投": "Nantou",
-    "彰化": "Changhua",
-    "苗栗": "Miaoli",
-    "雲林": "Yunlin",
-    "澎湖": "Penghu",
-    "金門": "Kinmen",
-    "連江": "Lienchiang"
-}
+city_map = {v: k for k, v in city_translate.items()}
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
 
     weather = None
-    forecast = None
+    today = []
+    week = []
 
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
     try:
 
-        # 📍 GPS定位
+        # GPS定位
         if lat and lon:
 
             weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
@@ -110,20 +88,46 @@ def index():
                 "humidity": weather_data["main"]["humidity"],
             }
 
-            forecast = []
+            # 今日24小時
+            for item in forecast_data["list"][:8]:
 
-            for item in forecast_data.get("list", [])[:7]:
-
-                forecast.append({
+                today.append({
+                    "time": item["dt_txt"][11:16],
                     "temp": item["main"]["temp"],
-                    "icon": item["weather"][0]["icon"],
-                    "time": item["dt_txt"]
+                    "icon": item["weather"][0]["icon"]
+                })
+
+            # 未來7天
+            days = {}
+
+            for item in forecast_data["list"]:
+
+                date = item["dt_txt"].split(" ")[0]
+
+                if date not in days:
+
+                    days[date] = {
+                        "temp": item["main"]["temp"],
+                        "icon": item["weather"][0]["icon"]
+                    }
+
+            for d in list(days.keys())[:7]:
+
+                week.append({
+                    "date": d,
+                    "temp": days[d]["temp"],
+                    "icon": days[d]["icon"]
                 })
 
     except Exception as e:
         print("Weather API error:", e)
 
-    return render_template("index.html", weather=weather, forecast=forecast)
+    return render_template(
+        "index.html",
+        weather=weather,
+        today=today,
+        week=week
+    )
 
 
 if __name__ == "__main__":
