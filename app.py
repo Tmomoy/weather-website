@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import requests
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -8,6 +9,7 @@ API_KEY = os.environ.get("WEATHER_API_KEY")
 
 if not API_KEY:
     print("⚠️ WARNING: WEATHER_API_KEY not set")
+
 
 # 英文轉中文
 city_translate = {
@@ -53,24 +55,22 @@ def index():
         if lat and lon:
 
             weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
+
             forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
 
         else:
 
             if request.method == "POST":
-
-                city_input = request.form.get("city", "").strip()
-                city_select = request.form.get("city_select", "").strip()
-
-                city = city_input if city_input else city_select
-
+                city = request.form.get("city", "").strip()
             else:
                 city = "台北"
 
             city_en = city_map.get(city, city)
 
-            weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
-            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
+            weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city_en},TW&appid={API_KEY}&units=metric&lang=zh_tw"
+
+            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city_en},TW&appid={API_KEY}&units=metric&lang=zh_tw"
+
 
         weather_data = requests.get(weather_url, timeout=10).json()
         forecast_data = requests.get(forecast_url, timeout=10).json()
@@ -82,18 +82,18 @@ def index():
 
             weather = {
                 "city": city_zh,
-                "temp": weather_data["main"]["temp"],
+                "temp": round(weather_data["main"]["temp"]),
                 "description": weather_data["weather"][0]["description"],
                 "icon": weather_data["weather"][0]["icon"],
                 "humidity": weather_data["main"]["humidity"],
             }
 
-            # 今日24小時
+            # 今日24小時（3小時預報 × 8）
             for item in forecast_data["list"][:8]:
 
                 today.append({
                     "time": item["dt_txt"][11:16],
-                    "temp": item["main"]["temp"],
+                    "temp": round(item["main"]["temp"]),
                     "icon": item["weather"][0]["icon"]
                 })
 
@@ -107,14 +107,14 @@ def index():
                 if date not in days:
 
                     days[date] = {
-                        "temp": item["main"]["temp"],
+                        "temp": round(item["main"]["temp"]),
                         "icon": item["weather"][0]["icon"]
                     }
 
             for d in list(days.keys())[:7]:
 
                 week.append({
-                    "date": d,
+                    "date": datetime.strptime(d, "%Y-%m-%d").strftime("%m/%d"),
                     "temp": days[d]["temp"],
                     "icon": days[d]["icon"]
                 })

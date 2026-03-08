@@ -22,31 +22,38 @@ text-align:center;
 background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
-width:500px;
+width:520px;
 box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
-input,select{
-padding:10px;
+input{
+padding:12px;
 border:none;
-border-radius:8px;
-width:220px;
+border-radius:10px;
+width:260px;
 margin-top:10px;
+font-size:16px;
 }
 
 button{
 padding:10px 20px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:#ffcc00;
 cursor:pointer;
 margin-top:15px;
 font-weight:bold;
+font-size:15px;
+}
+
+button:hover{
+background:#ffd633;
 }
 
 .location-btn{
 background:#00e5ff;
 color:black;
+margin-left:10px;
 }
 
 .weather-icon{
@@ -54,7 +61,7 @@ width:100px;
 }
 
 .card{
-margin-top:20px;
+margin-top:25px;
 background:rgba(255,255,255,0.15);
 padding:20px;
 border-radius:15px;
@@ -63,14 +70,15 @@ border-radius:15px;
 .forecast{
 display:flex;
 overflow-x:auto;
-gap:10px;
+gap:12px;
 margin-top:15px;
+padding-bottom:10px;
 }
 
 .day{
 background:rgba(255,255,255,0.2);
 padding:10px;
-border-radius:10px;
+border-radius:12px;
 min-width:80px;
 text-align:center;
 }
@@ -81,7 +89,7 @@ width:40px;
 
 .section-title{
 margin-top:25px;
-font-size:18px;
+font-size:20px;
 }
 
 </style>
@@ -96,37 +104,15 @@ font-size:18px;
 
 <form method="post">
 
-<input type="text" name="city" placeholder="輸入城市 (例如 台北)">
-<br>
-
-<select name="city_select">
-<option value="">或選擇城市</option>
-<option>台北</option>
-<option>新北</option>
-<option>桃園</option>
-<option>台中</option>
-<option>台南</option>
-<option>高雄</option>
-<option>基隆</option>
-<option>新竹</option>
-<option>苗栗</option>
-<option>彰化</option>
-<option>南投</option>
-<option>雲林</option>
-<option>嘉義</option>
-<option>屏東</option>
-<option>宜蘭</option>
-<option>花蓮</option>
-<option>台東</option>
-</select>
+<input type="text" name="city" placeholder="輸入城市或地區 (例如 台北 / 板橋 / 信義區)">
 
 <br>
 
 <button type="submit">查詢天氣</button>
 
-</form>
+<button type="button" class="location-btn" onclick="getLocation()">📍 我的定位</button>
 
-<button class="location-btn" onclick="getLocation()">📍 使用我的位置</button>
+</form>
 
 {% if weather %}
 
@@ -144,6 +130,7 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 </div>
 
 {% endif %}
+
 
 {% if today %}
 
@@ -168,6 +155,7 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 </div>
 
 {% endif %}
+
 
 {% if week %}
 
@@ -209,6 +197,10 @@ let lon = position.coords.longitude
 window.location.href="/?lat="+lat+"&lon="+lon
 
 })
+
+}else{
+
+alert("你的瀏覽器不支援定位")
 
 }
 
