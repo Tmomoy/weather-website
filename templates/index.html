@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,7 +22,7 @@ text-align:center;
 background:rgba(0,0,0,0.3);
 padding:40px;
 border-radius:20px;
-width:400px;
+width:420px;
 box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
@@ -46,9 +45,14 @@ cursor:pointer;
 width:100px;
 }
 
+.card{
+margin-top:20px;
+}
+
 .forecast{
 display:flex;
 justify-content:center;
+flex-wrap:wrap;
 margin-top:20px;
 gap:10px;
 }
@@ -57,100 +61,7 @@ gap:10px;
 background:rgba(255,255,255,0.2);
 padding:10px;
 border-radius:10px;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>🌤 天氣預報</h1>
-
-<form method="post">
-<input type="text" name="city" placeholder="輸入城市">
-<button type="submit">查詢</button>
-</form>
-
-{% if weather %}
-
-<h2>{{ weather.city }}</h2>
-
-<img class="weather-icon"
-src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
-
-<p>🌡 溫度 {{ weather.temp }} °C</p>
-<p>☁️ {{ weather.description }}</p>
-<p>💧 濕度 {{ weather.humidity }}%</p>
-
-{% endif %}
-
-{% if forecast %}
-
-<h3>📅 天氣預報</h3>
-
-<div class="forecast">
-
-{% for f in forecast %}
-
-<div class="day">
-
-<img src="https://openweathermap.org/img/wn/{{ f.icon }}@2x.png">
-
-<p>{{ f.temp }}°C</p>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-{% endif %}
-
-</div>
-
-</body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>天氣預報站</title>
-
-<style>
-
-body{
-font-family: Arial;
-text-align:center;
-background: linear-gradient(135deg,#4facfe,#00f2fe);
-color:white;
-}
-
-.container{
-margin-top:50px;
-}
-
-.card{
-background:rgba(255,255,255,0.2);
-padding:20px;
-border-radius:15px;
-width:300px;
-margin:auto;
-}
-
-.forecast{
-display:flex;
-justify-content:center;
-margin-top:30px;
-}
-
-.day{
-background:rgba(255,255,255,0.2);
-margin:10px;
-padding:10px;
-border-radius:10px;
+width:80px;
 }
 
 </style>
@@ -174,11 +85,12 @@ border-radius:10px;
 
 <h2>{{ weather.city }}</h2>
 
-<img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
+<img class="weather-icon"
+src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
-<p>溫度 {{ weather.temp }} °C</p>
-<p>{{ weather.description }}</p>
-<p>濕度 {{ weather.humidity }}%</p>
+<p>🌡 溫度 {{ weather.temp }} °C</p>
+<p>☁️ {{ weather.description }}</p>
+<p>💧 濕度 {{ weather.humidity }}%</p>
 
 </div>
 
@@ -186,7 +98,7 @@ border-radius:10px;
 
 {% if forecast %}
 
-<h2>7小時預報</h2>
+<h3>📅 天氣預報</h3>
 
 <div class="forecast">
 
@@ -196,7 +108,7 @@ border-radius:10px;
 
 <p>{{ f.time }}</p>
 
-<img src="http://openweathermap.org/img/wn/{{ f.icon }}@2x.png">
+<img src="https://openweathermap.org/img/wn/{{ f.icon }}@2x.png">
 
 <p>{{ f.temp }}°C</p>
 
@@ -211,5 +123,4 @@ border-radius:10px;
 </div>
 
 </body>
->>>>>>> 2a0943805f77beea88cdc0832462244397121b58
 </html>
