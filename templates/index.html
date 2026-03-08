@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>天氣預報站</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 body{
@@ -13,8 +15,9 @@ min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-background: linear-gradient(135deg,#4facfe,#00f2fe);
 color:white;
+background: linear-gradient(135deg,#4facfe,#00f2fe);
+transition:0.5s;
 }
 
 .container{
@@ -22,7 +25,7 @@ text-align:center;
 background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
-width:520px;
+width:540px;
 box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
@@ -31,7 +34,6 @@ padding:12px;
 border:none;
 border-radius:10px;
 width:260px;
-margin-top:10px;
 font-size:16px;
 }
 
@@ -43,11 +45,6 @@ background:#ffcc00;
 cursor:pointer;
 margin-top:15px;
 font-weight:bold;
-font-size:15px;
-}
-
-button:hover{
-background:#ffd633;
 }
 
 .location-btn{
@@ -72,7 +69,6 @@ display:flex;
 overflow-x:auto;
 gap:12px;
 margin-top:15px;
-padding-bottom:10px;
 }
 
 .day{
@@ -83,17 +79,18 @@ min-width:80px;
 text-align:center;
 }
 
-.day img{
-width:40px;
-}
-
 .section-title{
 margin-top:25px;
 font-size:20px;
 }
 
-</style>
+canvas{
+margin-top:20px;
+background:white;
+border-radius:10px;
+}
 
+</style>
 </head>
 
 <body>
@@ -104,7 +101,7 @@ font-size:20px;
 
 <form method="post">
 
-<input type="text" name="city" placeholder="輸入城市或地區 (例如 台北 / 板橋 / 信義區)">
+<input type="text" name="city" placeholder="輸入城市或地區">
 
 <br>
 
@@ -113,6 +110,7 @@ font-size:20px;
 <button type="button" class="location-btn" onclick="getLocation()">📍 我的定位</button>
 
 </form>
+
 
 {% if weather %}
 
@@ -154,6 +152,8 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
 </div>
 
+<canvas id="tempChart"></canvas>
+
 {% endif %}
 
 
@@ -183,6 +183,7 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
 </div>
 
+
 <script>
 
 function getLocation(){
@@ -198,13 +199,44 @@ window.location.href="/?lat="+lat+"&lon="+lon
 
 })
 
-}else{
-
-alert("你的瀏覽器不支援定位")
-
 }
 
 }
+
+
+{% if today %}
+
+const ctx = document.getElementById('tempChart');
+
+const tempChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: [{% for t in today %}"{{t.time}}",{% endfor %}],
+datasets: [{
+label: '溫度 °C',
+data: [{% for t in today %}{{t.temp}},{% endfor %}],
+borderWidth:3,
+tension:0.4
+}]
+}
+});
+
+{% endif %}
+
+
+{% if weather %}
+
+let desc = "{{ weather.description }}"
+
+if(desc.includes("雨")){
+document.body.style.background="linear-gradient(135deg,#3a6073,#16222a)"
+}
+
+if(desc.includes("晴")){
+document.body.style.background="linear-gradient(135deg,#fceabb,#f8b500)"
+}
+
+{% endif %}
 
 </script>
 
