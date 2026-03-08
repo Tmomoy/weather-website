@@ -16,24 +16,17 @@ def index():
     weather = None
     forecast = None
 
-    # 取得 GPS 座標
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
     try:
 
-        # 如果有 GPS
+        # GPS定位
         if lat and lon:
 
-            weather_url = (
-                f"https://api.openweathermap.org/data/2.5/weather"
-                f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
-            )
+            weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
 
-            forecast_url = (
-                f"https://api.openweathermap.org/data/2.5/forecast"
-                f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
-            )
+            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
 
         else:
 
@@ -74,15 +67,9 @@ def index():
 
             city_en = city_map.get(city, city)
 
-            weather_url = (
-                f"https://api.openweathermap.org/data/2.5/weather"
-                f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
-            )
+            weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
 
-            forecast_url = (
-                f"https://api.openweathermap.org/data/2.5/forecast"
-                f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
-            )
+            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
 
         weather_data = requests.get(weather_url, timeout=10).json()
         forecast_data = requests.get(forecast_url, timeout=10).json()
