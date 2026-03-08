@@ -19,18 +19,19 @@ color:white;
 
 .container{
 text-align:center;
-background:rgba(0,0,0,0.3);
+background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
-width:420px;
+width:450px;
 box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
-input{
+input,select{
 padding:10px;
 border:none;
 border-radius:8px;
-width:200px;
+width:220px;
+margin-top:10px;
 }
 
 button{
@@ -39,6 +40,12 @@ border:none;
 border-radius:8px;
 background:#ffcc00;
 cursor:pointer;
+margin-top:15px;
+font-weight:bold;
+}
+
+button:hover{
+background:#ffd633;
 }
 
 .weather-icon{
@@ -47,6 +54,9 @@ width:100px;
 
 .card{
 margin-top:20px;
+background:rgba(255,255,255,0.15);
+padding:15px;
+border-radius:15px;
 }
 
 .forecast{
@@ -61,7 +71,12 @@ gap:10px;
 background:rgba(255,255,255,0.2);
 padding:10px;
 border-radius:10px;
-width:80px;
+width:90px;
+font-size:14px;
+}
+
+.day img{
+width:50px;
 }
 
 </style>
@@ -75,8 +90,35 @@ width:80px;
 <h1>🌤 天氣預報站</h1>
 
 <form method="post">
-<input type="text" name="city" placeholder="輸入城市">
-<button type="submit">查詢</button>
+
+<input type="text" name="city" placeholder="輸入城市 (例如 台北)">
+<br>
+
+<select name="city_select">
+<option value="">或選擇城市</option>
+<option>台北</option>
+<option>新北</option>
+<option>桃園</option>
+<option>台中</option>
+<option>台南</option>
+<option>高雄</option>
+<option>基隆</option>
+<option>新竹</option>
+<option>苗栗</option>
+<option>彰化</option>
+<option>南投</option>
+<option>雲林</option>
+<option>嘉義</option>
+<option>屏東</option>
+<option>宜蘭</option>
+<option>花蓮</option>
+<option>台東</option>
+</select>
+
+<br>
+
+<button type="submit">查詢天氣</button>
+
 </form>
 
 {% if weather %}

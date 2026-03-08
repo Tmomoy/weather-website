@@ -18,8 +18,16 @@ def index():
 
     if request.method == "POST":
 
-        city = request.form.get("city", "").strip()
+        # 取得輸入城市
+        city_input = request.form.get("city", "").strip()
 
+        # 取得下拉選單城市
+        city_select = request.form.get("city_select", "").strip()
+
+        # 優先使用輸入
+        city = city_input if city_input else city_select
+
+        # 台灣城市對照
         city_map = {
             "台北": "Taipei",
             "臺北": "Taipei",
@@ -46,10 +54,10 @@ def index():
         }
 
         # 中文轉英文
-        if city in city_map:
-            city_en = city_map[city]
-        else:
-            city_en = city if city else "Taipei"
+        city_en = city_map.get(city, city)
+
+        if not city_en:
+            city_en = "Taipei"
 
         weather_url = (
             f"https://api.openweathermap.org/data/2.5/weather"
@@ -69,7 +77,7 @@ def index():
             if str(weather_data.get("cod")) == "200":
 
                 weather = {
-                    "city": city,  # 顯示中文
+                    "city": city if city else "台北",
                     "temp": weather_data["main"]["temp"],
                     "description": weather_data["weather"][0]["description"],
                     "icon": weather_data["weather"][0]["icon"],
