@@ -17,8 +17,6 @@ justify-content:center;
 align-items:center;
 color:white;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
-transition:0.6s;
-overflow-x:hidden;
 }
 
 .container{
@@ -27,33 +25,27 @@ background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
 width:540px;
-box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
 .search-box{
 position:relative;
-display:inline-block;
 }
 
 input{
 padding:12px;
-border:none;
 border-radius:10px;
+border:none;
 width:260px;
-font-size:16px;
 }
 
 .autocomplete{
 position:absolute;
-top:45px;
-left:0;
-width:260px;
 background:white;
 color:black;
+width:260px;
 border-radius:10px;
 max-height:200px;
-overflow-y:auto;
-z-index:10;
+overflow:auto;
 }
 
 .autocomplete div{
@@ -61,36 +53,21 @@ padding:8px;
 cursor:pointer;
 }
 
-.autocomplete div:hover{
-background:#eee;
-}
-
 button{
 padding:10px 20px;
 border:none;
 border-radius:10px;
 background:#ffcc00;
-cursor:pointer;
 margin-top:15px;
-font-weight:bold;
-}
-
-button:hover{
-background:#ffd633;
+cursor:pointer;
 }
 
 .location-btn{
 background:#00e5ff;
-color:black;
-margin-left:10px;
-}
-
-.weather-icon{
-width:100px;
 }
 
 .card{
-margin-top:25px;
+margin-top:20px;
 background:rgba(255,255,255,0.15);
 padding:20px;
 border-radius:15px;
@@ -99,64 +76,21 @@ border-radius:15px;
 .forecast{
 display:flex;
 overflow-x:auto;
-gap:12px;
+gap:10px;
 margin-top:15px;
 }
 
 .day{
 background:rgba(255,255,255,0.2);
 padding:10px;
-border-radius:12px;
-min-width:80px;
-text-align:center;
-}
-
-.day img{
-width:40px;
-}
-
-.section-title{
-margin-top:25px;
-font-size:20px;
-}
-
-canvas{
-margin-top:20px;
-background:white;
 border-radius:10px;
-padding:10px;
-}
-
-/* 雨動畫 */
-
-#rain{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-pointer-events:none;
-}
-
-.raindrop{
-position:absolute;
-width:2px;
-height:18px;
-background:rgba(255,255,255,0.6);
-animation:rainfall linear infinite;
-}
-
-@keyframes rainfall{
-0%{transform:translateY(-100px);}
-100%{transform:translateY(100vh);}
+min-width:80px;
 }
 
 </style>
 </head>
 
 <body>
-
-<div id="rain"></div>
 
 <div class="container">
 
@@ -166,7 +100,7 @@ animation:rainfall linear infinite;
 
 <div class="search-box">
 
-<input id="cityInput" type="text" name="city" placeholder="輸入城市或地區">
+<input id="cityInput" name="city" placeholder="輸入城市或地區">
 
 <div id="autocomplete" class="autocomplete"></div>
 
@@ -180,55 +114,43 @@ animation:rainfall linear infinite;
 
 </form>
 
+
 {% if weather %}
 
 <div class="card">
 
 <h2>{{ weather.city }}</h2>
 
-<img class="weather-icon"
-src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
+<img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
 <p>🌡 {{ weather.temp }}°C</p>
 <p>{{ weather.description }}</p>
 <p>💧 濕度 {{ weather.humidity }}%</p>
 
-{% if weather.feels %}
-<p>🌡 體感 {{ weather.feels }}°C</p>
-{% endif %}
-
-{% if weather.wind %}
-<p>💨 風速 {{ weather.wind }} m/s</p>
-{% endif %}
-
-{% if weather.pressure %}
-<p>☁ 氣壓 {{ weather.pressure }} hPa</p>
-{% endif %}
-
-{% if weather.sunrise %}
 <p>🌅 日出 {{ weather.sunrise }}</p>
-{% endif %}
-
-{% if weather.sunset %}
 <p>🌇 日落 {{ weather.sunset }}</p>
-{% endif %}
 
 </div>
 
 {% endif %}
 
+
 {% if today %}
 
-<h3 class="section-title">⏰ 今日24小時</h3>
+<h3>今日24小時</h3>
 
 <div class="forecast">
 
 {% for t in today %}
 
 <div class="day">
-<p>{{ t.time }}</p>
-<img src="https://openweathermap.org/img/wn/{{ t.icon }}@2x.png">
-<p>{{ t.temp }}°C</p>
+
+<p>{{t.time}}</p>
+
+<img src="https://openweathermap.org/img/wn/{{t.icon}}@2x.png">
+
+<p>{{t.temp}}°C</p>
+
 </div>
 
 {% endfor %}
@@ -239,35 +161,12 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
 {% endif %}
 
-{% if week %}
-
-<h3 class="section-title">📅 未來7天</h3>
-
-<div class="forecast">
-
-{% for d in week %}
-
-<div class="day">
-<p>{{ d.date }}</p>
-<img src="https://openweathermap.org/img/wn/{{ d.icon }}@2x.png">
-<p>{{ d.temp }}°C</p>
 </div>
 
-{% endfor %}
-
-</div>
-
-{% endif %}
-
-</div>
 
 <script>
 
-/* GPS */
-
 function getLocation(){
-
-if(navigator.geolocation){
 
 navigator.geolocation.getCurrentPosition(function(position){
 
@@ -280,104 +179,7 @@ window.location.href="/?lat="+lat+"&lon="+lon
 
 }
 
-}
-
-/* 溫度圖 */
-
-{% if today %}
-
-const canvas=document.getElementById("tempChart")
-
-if(canvas){
-
-new Chart(canvas,{
-type:"line",
-data:{
-labels:[{% for t in today %}"{{t.time}}"{% if not loop.last %},{% endif %}{% endfor %}],
-datasets:[{
-label:"溫度 °C",
-data:[{% for t in today %}{{t.temp}}{% if not loop.last %},{% endif %}{% endfor %}],
-borderColor:"#ffcc00",
-backgroundColor:"rgba(255,204,0,0.2)",
-borderWidth:3,
-tension:0.4,
-fill:true
-}]
-}
-})
-
-}
-
-{% endif %}
-
-/* 天氣背景 */
-
-{% if weather %}
-
-let desc="{{weather.description}}"
-
-if(desc.includes("雨")){
-document.body.style.background="linear-gradient(135deg,#2c3e50,#4ca1af)"
-createRain()
-}
-else if(desc.includes("晴")){
-document.body.style.background="linear-gradient(135deg,#fceabb,#f8b500)"
-}
-else if(desc.includes("雲")){
-document.body.style.background="linear-gradient(135deg,#757f9a,#d7dde8)"
-}
-
-{% endif %}
-
-/* 夜間模式 */
-
-let hour=new Date().getHours()
-
-if(hour>=18||hour<=6){
-document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
-}
-
-/* 雨動畫 */
-
-function createRain(){
-
-const rain=document.getElementById("rain")
-
-if(rain.children.length>0) return
-
-for(let i=0;i<120;i++){
-
-let drop=document.createElement("div")
-
-drop.className="raindrop"
-
-drop.style.left=Math.random()*100+"vw"
-drop.style.animationDuration=(Math.random()*1+0.6)+"s"
-
-rain.appendChild(drop)
-
-}
-
-}
-
-/* 城市自動搜尋 */
-
-const cities=[
-"台北","新北","板橋","三重","新店","中和",
-"桃園","中壢","平鎮",
-"台中","西屯","北屯","南屯",
-"台南","永康","安平",
-"高雄","鳳山","左營","岡山",
-"基隆","新竹","竹北",
-"苗栗","彰化","員林",
-"南投","埔里",
-"雲林","斗六",
-"嘉義","太保",
-"屏東","潮州",
-"宜蘭","羅東",
-"花蓮","吉安",
-"台東"
-]
+const cities={{districts | tojson}}
 
 const input=document.getElementById("cityInput")
 const box=document.getElementById("autocomplete")
@@ -388,7 +190,7 @@ let val=this.value
 
 box.innerHTML=""
 
-if(!val) return
+if(!val)return
 
 cities.forEach(city=>{
 
@@ -399,8 +201,10 @@ let div=document.createElement("div")
 div.textContent=city
 
 div.onclick=function(){
+
 input.value=city
 box.innerHTML=""
+
 }
 
 box.appendChild(div)
@@ -410,6 +214,24 @@ box.appendChild(div)
 })
 
 })
+
+{% if today %}
+
+const ctx=document.getElementById("tempChart")
+
+new Chart(ctx,{
+type:"line",
+data:{
+labels:[{% for t in today %}"{{t.time}}",{% endfor %}],
+datasets:[{
+label:"溫度",
+data:[{% for t in today %}{{t.temp}},{% endfor %}],
+borderColor:"yellow"
+}]
+}
+})
+
+{% endif %}
 
 </script>
 
