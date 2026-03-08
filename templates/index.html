@@ -9,14 +9,14 @@
 <style>
 
 body{
-font-family: Arial, sans-serif;
+font-family:Arial;
 margin:0;
 min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
 color:white;
-background: linear-gradient(135deg,#4facfe,#00f2fe);
+background:linear-gradient(135deg,#4facfe,#00f2fe);
 transition:0.6s;
 overflow-x:hidden;
 }
@@ -28,7 +28,11 @@ padding:40px;
 border-radius:20px;
 width:540px;
 box-shadow:0 0 20px rgba(0,0,0,0.3);
-z-index:2;
+}
+
+.search-box{
+position:relative;
+display:inline-block;
 }
 
 input{
@@ -37,6 +41,28 @@ border:none;
 border-radius:10px;
 width:260px;
 font-size:16px;
+}
+
+.autocomplete{
+position:absolute;
+top:45px;
+left:0;
+width:260px;
+background:white;
+color:black;
+border-radius:10px;
+max-height:200px;
+overflow-y:auto;
+z-index:10;
+}
+
+.autocomplete div{
+padding:8px;
+cursor:pointer;
+}
+
+.autocomplete div:hover{
+background:#eee;
 }
 
 button{
@@ -75,7 +101,6 @@ display:flex;
 overflow-x:auto;
 gap:12px;
 margin-top:15px;
-padding-bottom:10px;
 }
 
 .day{
@@ -111,7 +136,6 @@ left:0;
 width:100%;
 height:100%;
 pointer-events:none;
-z-index:1;
 }
 
 .raindrop{
@@ -140,7 +164,13 @@ animation:rainfall linear infinite;
 
 <form method="post">
 
-<input type="text" name="city" placeholder="輸入城市或地區">
+<div class="search-box">
+
+<input id="cityInput" type="text" name="city" placeholder="輸入城市或地區">
+
+<div id="autocomplete" class="autocomplete"></div>
+
+</div>
 
 <br>
 
@@ -196,13 +226,9 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 {% for t in today %}
 
 <div class="day">
-
 <p>{{ t.time }}</p>
-
 <img src="https://openweathermap.org/img/wn/{{ t.icon }}@2x.png">
-
 <p>{{ t.temp }}°C</p>
-
 </div>
 
 {% endfor %}
@@ -222,13 +248,9 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 {% for d in week %}
 
 <div class="day">
-
 <p>{{ d.date }}</p>
-
 <img src="https://openweathermap.org/img/wn/{{ d.icon }}@2x.png">
-
 <p>{{ d.temp }}°C</p>
-
 </div>
 
 {% endfor %}
@@ -241,7 +263,7 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 
 <script>
 
-/* GPS定位 */
+/* GPS */
 
 function getLocation(){
 
@@ -249,40 +271,31 @@ if(navigator.geolocation){
 
 navigator.geolocation.getCurrentPosition(function(position){
 
-let lat = position.coords.latitude
-let lon = position.coords.longitude
+let lat=position.coords.latitude
+let lon=position.coords.longitude
 
 window.location.href="/?lat="+lat+"&lon="+lon
 
-}, function(){
-
-alert("定位失敗，請允許定位權限")
-
 })
 
-}else{
-
-alert("瀏覽器不支援定位")
-
 }
 
 }
 
-
-/* 溫度圖表 */
+/* 溫度圖 */
 
 {% if today %}
 
-const chartCanvas=document.getElementById('tempChart')
+const canvas=document.getElementById("tempChart")
 
-if(chartCanvas){
+if(canvas){
 
-new Chart(chartCanvas,{
-type:'line',
+new Chart(canvas,{
+type:"line",
 data:{
 labels:[{% for t in today %}"{{t.time}}"{% if not loop.last %},{% endif %}{% endfor %}],
 datasets:[{
-label:'溫度 °C',
+label:"溫度 °C",
 data:[{% for t in today %}{{t.temp}}{% if not loop.last %},{% endif %}{% endfor %}],
 borderColor:"#ffcc00",
 backgroundColor:"rgba(255,204,0,0.2)",
@@ -290,20 +303,12 @@ borderWidth:3,
 tension:0.4,
 fill:true
 }]
-},
-options:{
-plugins:{legend:{labels:{color:"black"}}},
-scales:{
-x:{ticks:{color:"black"}},
-y:{ticks:{color:"black"}}
-}
 }
 })
 
 }
 
 {% endif %}
-
 
 /* 天氣背景 */
 
@@ -322,6 +327,8 @@ else if(desc.includes("雲")){
 document.body.style.background="linear-gradient(135deg,#757f9a,#d7dde8)"
 }
 
+{% endif %}
+
 /* 夜間模式 */
 
 let hour=new Date().getHours()
@@ -329,9 +336,6 @@ let hour=new Date().getHours()
 if(hour>=18||hour<=6){
 document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
 }
-
-{% endif %}
-
 
 /* 雨動畫 */
 
@@ -344,17 +348,68 @@ if(rain.children.length>0) return
 for(let i=0;i<120;i++){
 
 let drop=document.createElement("div")
-drop.classList.add("raindrop")
+
+drop.className="raindrop"
 
 drop.style.left=Math.random()*100+"vw"
 drop.style.animationDuration=(Math.random()*1+0.6)+"s"
-drop.style.opacity=Math.random()
 
 rain.appendChild(drop)
 
 }
 
 }
+
+/* 城市自動搜尋 */
+
+const cities=[
+"台北","新北","板橋","三重","新店","中和",
+"桃園","中壢","平鎮",
+"台中","西屯","北屯","南屯",
+"台南","永康","安平",
+"高雄","鳳山","左營","岡山",
+"基隆","新竹","竹北",
+"苗栗","彰化","員林",
+"南投","埔里",
+"雲林","斗六",
+"嘉義","太保",
+"屏東","潮州",
+"宜蘭","羅東",
+"花蓮","吉安",
+"台東"
+]
+
+const input=document.getElementById("cityInput")
+const box=document.getElementById("autocomplete")
+
+input.addEventListener("input",function(){
+
+let val=this.value
+
+box.innerHTML=""
+
+if(!val) return
+
+cities.forEach(city=>{
+
+if(city.includes(val)){
+
+let div=document.createElement("div")
+
+div.textContent=city
+
+div.onclick=function(){
+input.value=city
+box.innerHTML=""
+}
+
+box.appendChild(div)
+
+}
+
+})
+
+})
 
 </script>
 
