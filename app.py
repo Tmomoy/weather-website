@@ -16,86 +16,99 @@ def index():
     weather = None
     forecast = None
 
-    if request.method == "POST":
+    # 取得 GPS 座標
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
 
-        # 取得輸入城市
-        city_input = request.form.get("city", "").strip()
+    try:
 
-        # 取得下拉選單城市
-        city_select = request.form.get("city_select", "").strip()
+        # 如果有 GPS
+        if lat and lon:
 
-        # 優先使用輸入
-        city = city_input if city_input else city_select
+            weather_url = (
+                f"https://api.openweathermap.org/data/2.5/weather"
+                f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
+            )
 
-        # 台灣城市對照
-        city_map = {
-            "台北": "Taipei",
-            "臺北": "Taipei",
-            "新北": "New Taipei",
-            "桃園": "Taoyuan",
-            "台中": "Taichung",
-            "臺中": "Taichung",
-            "台南": "Tainan",
-            "高雄": "Kaohsiung",
-            "基隆": "Keelung",
-            "新竹": "Hsinchu",
-            "嘉義": "Chiayi",
-            "屏東": "Pingtung",
-            "宜蘭": "Yilan",
-            "花蓮": "Hualien",
-            "台東": "Taitung",
-            "南投": "Nantou",
-            "彰化": "Changhua",
-            "苗栗": "Miaoli",
-            "雲林": "Yunlin",
-            "澎湖": "Penghu",
-            "金門": "Kinmen",
-            "連江": "Lienchiang"
-        }
+            forecast_url = (
+                f"https://api.openweathermap.org/data/2.5/forecast"
+                f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
+            )
 
-        # 中文轉英文
-        city_en = city_map.get(city, city)
+        else:
 
-        if not city_en:
-            city_en = "Taipei"
+            if request.method == "POST":
 
-        weather_url = (
-            f"https://api.openweathermap.org/data/2.5/weather"
-            f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
-        )
+                city_input = request.form.get("city", "").strip()
+                city_select = request.form.get("city_select", "").strip()
 
-        forecast_url = (
-            f"https://api.openweathermap.org/data/2.5/forecast"
-            f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
-        )
+                city = city_input if city_input else city_select
 
-        try:
+            else:
+                city = "台北"
 
-            weather_data = requests.get(weather_url, timeout=10).json()
-            forecast_data = requests.get(forecast_url, timeout=10).json()
+            city_map = {
+                "台北": "Taipei",
+                "臺北": "Taipei",
+                "新北": "New Taipei",
+                "桃園": "Taoyuan",
+                "台中": "Taichung",
+                "臺中": "Taichung",
+                "台南": "Tainan",
+                "高雄": "Kaohsiung",
+                "基隆": "Keelung",
+                "新竹": "Hsinchu",
+                "嘉義": "Chiayi",
+                "屏東": "Pingtung",
+                "宜蘭": "Yilan",
+                "花蓮": "Hualien",
+                "台東": "Taitung",
+                "南投": "Nantou",
+                "彰化": "Changhua",
+                "苗栗": "Miaoli",
+                "雲林": "Yunlin",
+                "澎湖": "Penghu",
+                "金門": "Kinmen",
+                "連江": "Lienchiang"
+            }
 
-            if str(weather_data.get("cod")) == "200":
+            city_en = city_map.get(city, city)
 
-                weather = {
-                    "city": city if city else "台北",
-                    "temp": weather_data["main"]["temp"],
-                    "description": weather_data["weather"][0]["description"],
-                    "icon": weather_data["weather"][0]["icon"],
-                    "humidity": weather_data["main"]["humidity"],
-                }
+            weather_url = (
+                f"https://api.openweathermap.org/data/2.5/weather"
+                f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
+            )
 
-                forecast = []
+            forecast_url = (
+                f"https://api.openweathermap.org/data/2.5/forecast"
+                f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
+            )
 
-                for item in forecast_data.get("list", [])[:7]:
+        weather_data = requests.get(weather_url, timeout=10).json()
+        forecast_data = requests.get(forecast_url, timeout=10).json()
 
-                    forecast.append({
-                        "temp": item["main"]["temp"],
-                        "icon": item["weather"][0]["icon"],
-                        "time": item["dt_txt"]
-                    })
+        if str(weather_data.get("cod")) == "200":
 
-        except Exception as e:
-            print("Weather API error:", e)
+            weather = {
+                "city": weather_data["name"],
+                "temp": weather_data["main"]["temp"],
+                "description": weather_data["weather"][0]["description"],
+                "icon": weather_data["weather"][0]["icon"],
+                "humidity": weather_data["main"]["humidity"],
+            }
+
+            forecast = []
+
+            for item in forecast_data.get("list", [])[:7]:
+
+                forecast.append({
+                    "temp": item["main"]["temp"],
+                    "icon": item["weather"][0]["icon"],
+                    "time": item["dt_txt"]
+                })
+
+    except Exception as e:
+        print("Weather API error:", e)
 
     return render_template("index.html", weather=weather, forecast=forecast)
 

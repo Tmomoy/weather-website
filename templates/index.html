@@ -9,7 +9,7 @@
 body{
 font-family: Arial, sans-serif;
 margin:0;
-height:100vh;
+min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -42,10 +42,21 @@ background:#ffcc00;
 cursor:pointer;
 margin-top:15px;
 font-weight:bold;
+transition:0.2s;
 }
 
 button:hover{
 background:#ffd633;
+transform:scale(1.05);
+}
+
+.location-btn{
+background:#00e5ff;
+color:black;
+}
+
+.location-btn:hover{
+background:#66f2ff;
 }
 
 .weather-icon{
@@ -55,7 +66,7 @@ width:100px;
 .card{
 margin-top:20px;
 background:rgba(255,255,255,0.15);
-padding:15px;
+padding:20px;
 border-radius:15px;
 }
 
@@ -73,10 +84,25 @@ padding:10px;
 border-radius:10px;
 width:90px;
 font-size:14px;
+transition:0.2s;
+}
+
+.day:hover{
+transform:scale(1.08);
+background:rgba(255,255,255,0.35);
 }
 
 .day img{
 width:50px;
+}
+
+@media (max-width:500px){
+
+.container{
+width:90%;
+padding:25px;
+}
+
 }
 
 </style>
@@ -121,6 +147,8 @@ width:50px;
 
 </form>
 
+<button class="location-btn" onclick="getLocation()">📍 使用我的位置</button>
+
 {% if weather %}
 
 <div class="card">
@@ -163,6 +191,27 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 {% endif %}
 
 </div>
+
+<script>
+
+function getLocation(){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+let lat = position.coords.latitude
+let lon = position.coords.longitude
+
+window.location.href="/?lat="+lat+"&lon="+lon
+
+})
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
