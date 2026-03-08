@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>天氣預報站</title>
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+background: linear-gradient(135deg,#4facfe,#00f2fe);
+color:white;
+}
+
+.container{
+margin-top:50px;
+}
+
+.card{
+background:rgba(255,255,255,0.2);
+padding:20px;
+border-radius:15px;
+width:300px;
+margin:auto;
+}
+
+.forecast{
+display:flex;
+justify-content:center;
+margin-top:30px;
+}
+
+.day{
+background:rgba(255,255,255,0.2);
+margin:10px;
+padding:10px;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🌤 天氣預報站</h1>
+
+<form method="post">
+<input type="text" name="city" placeholder="輸入城市">
+<button type="submit">查詢</button>
+</form>
+
+{% if weather %}
+
+<div class="card">
+
+<h2>{{ weather.city }}</h2>
+
+<img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
+
+<p>溫度 {{ weather.temp }} °C</p>
+<p>{{ weather.description }}</p>
+<p>濕度 {{ weather.humidity }}%</p>
+
+</div>
+
+{% endif %}
+
+{% if forecast %}
+
+<h2>7小時預報</h2>
+
+<div class="forecast">
+
+{% for f in forecast %}
+
+<div class="day">
+
+<p>{{ f.time }}</p>
+
+<img src="http://openweathermap.org/img/wn/{{ f.icon }}@2x.png">
+
+<p>{{ f.temp }}°C</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>
