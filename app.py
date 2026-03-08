@@ -18,19 +18,47 @@ def index():
 
     if request.method == "POST":
 
-        city = request.form.get("city")
+        city = request.form.get("city", "").strip()
 
-        if not city:
-            city = "Taipei"
+        city_map = {
+            "台北": "Taipei",
+            "臺北": "Taipei",
+            "新北": "New Taipei",
+            "桃園": "Taoyuan",
+            "台中": "Taichung",
+            "臺中": "Taichung",
+            "台南": "Tainan",
+            "高雄": "Kaohsiung",
+            "基隆": "Keelung",
+            "新竹": "Hsinchu",
+            "嘉義": "Chiayi",
+            "屏東": "Pingtung",
+            "宜蘭": "Yilan",
+            "花蓮": "Hualien",
+            "台東": "Taitung",
+            "南投": "Nantou",
+            "彰化": "Changhua",
+            "苗栗": "Miaoli",
+            "雲林": "Yunlin",
+            "澎湖": "Penghu",
+            "金門": "Kinmen",
+            "連江": "Lienchiang"
+        }
+
+        # 中文轉英文
+        if city in city_map:
+            city_en = city_map[city]
+        else:
+            city_en = city if city else "Taipei"
 
         weather_url = (
             f"https://api.openweathermap.org/data/2.5/weather"
-            f"?q={city}&appid={API_KEY}&units=metric&lang=zh_tw"
+            f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
         )
 
         forecast_url = (
             f"https://api.openweathermap.org/data/2.5/forecast"
-            f"?q={city}&appid={API_KEY}&units=metric&lang=zh_tw"
+            f"?q={city_en}&appid={API_KEY}&units=metric&lang=zh_tw"
         )
 
         try:
@@ -41,7 +69,7 @@ def index():
             if str(weather_data.get("cod")) == "200":
 
                 weather = {
-                    "city": city,
+                    "city": city,  # 顯示中文
                     "temp": weather_data["main"]["temp"],
                     "description": weather_data["weather"][0]["description"],
                     "icon": weather_data["weather"][0]["icon"],
