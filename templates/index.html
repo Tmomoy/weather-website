@@ -123,12 +123,8 @@ animation:rainfall linear infinite;
 }
 
 @keyframes rainfall{
-0%{
-transform:translateY(-100px);
-}
-100%{
-transform:translateY(100vh);
-}
+0%{transform:translateY(-100px);}
+100%{transform:translateY(100vh);}
 }
 
 </style>
@@ -166,6 +162,26 @@ src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png">
 <p>🌡 {{ weather.temp }}°C</p>
 <p>{{ weather.description }}</p>
 <p>💧 濕度 {{ weather.humidity }}%</p>
+
+{% if weather.feels %}
+<p>🌡 體感 {{ weather.feels }}°C</p>
+{% endif %}
+
+{% if weather.wind %}
+<p>💨 風速 {{ weather.wind }} m/s</p>
+{% endif %}
+
+{% if weather.pressure %}
+<p>☁ 氣壓 {{ weather.pressure }} hPa</p>
+{% endif %}
+
+{% if weather.sunrise %}
+<p>🌅 日出 {{ weather.sunrise }}</p>
+{% endif %}
+
+{% if weather.sunset %}
+<p>🌇 日落 {{ weather.sunset }}</p>
+{% endif %}
 
 </div>
 
@@ -252,13 +268,16 @@ alert("瀏覽器不支援定位")
 
 }
 
+
 /* 溫度圖表 */
 
 {% if today %}
 
-const ctx=document.getElementById('tempChart')
+const chartCanvas=document.getElementById('tempChart')
 
-new Chart(ctx,{
+if(chartCanvas){
+
+new Chart(chartCanvas,{
 type:'line',
 data:{
 labels:[{% for t in today %}"{{t.time}}"{% if not loop.last %},{% endif %}{% endfor %}],
@@ -273,15 +292,15 @@ fill:true
 }]
 },
 options:{
-plugins:{
-legend:{labels:{color:"black"}}
-},
+plugins:{legend:{labels:{color:"black"}}},
 scales:{
 x:{ticks:{color:"black"}},
 y:{ticks:{color:"black"}}
 }
 }
 })
+
+}
 
 {% endif %}
 
@@ -296,13 +315,19 @@ if(desc.includes("雨")){
 document.body.style.background="linear-gradient(135deg,#2c3e50,#4ca1af)"
 createRain()
 }
-
 else if(desc.includes("晴")){
 document.body.style.background="linear-gradient(135deg,#fceabb,#f8b500)"
 }
-
 else if(desc.includes("雲")){
 document.body.style.background="linear-gradient(135deg,#757f9a,#d7dde8)"
+}
+
+/* 夜間模式 */
+
+let hour=new Date().getHours()
+
+if(hour>=18||hour<=6){
+document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
 }
 
 {% endif %}
@@ -313,6 +338,8 @@ document.body.style.background="linear-gradient(135deg,#757f9a,#d7dde8)"
 function createRain(){
 
 const rain=document.getElementById("rain")
+
+if(rain.children.length>0) return
 
 for(let i=0;i<120;i++){
 

@@ -80,12 +80,20 @@ def index():
             city_en = weather_data["name"]
             city_zh = city_translate.get(city_en, city_en)
 
+            sunrise = datetime.fromtimestamp(weather_data["sys"]["sunrise"]).strftime("%H:%M")
+            sunset = datetime.fromtimestamp(weather_data["sys"]["sunset"]).strftime("%H:%M")
+
             weather = {
                 "city": city_zh,
                 "temp": round(weather_data["main"]["temp"]),
+                "feels": round(weather_data["main"]["feels_like"]),
                 "description": weather_data["weather"][0]["description"],
                 "icon": weather_data["weather"][0]["icon"],
                 "humidity": weather_data["main"]["humidity"],
+                "pressure": weather_data["main"]["pressure"],
+                "wind": weather_data["wind"]["speed"],
+                "sunrise": sunrise,
+                "sunset": sunset
             }
 
             # 今日24小時（3小時預報 × 8）
