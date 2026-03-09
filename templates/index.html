@@ -131,7 +131,7 @@ margin-top:20px;
 
 <div class="day">
 
-<p>{{f.start}}</p>
+<p>{{f.time}}</p>
 
 <p>{{f.wx}}</p>
 
@@ -193,6 +193,7 @@ box.appendChild(div)
 
 })
 
+
 function getLocation(){
 
 navigator.geolocation.getCurrentPosition(function(pos){
@@ -206,7 +207,7 @@ alert("定位成功 (示範版)")
 
 {% if temps %}
 
-const ctx=document.getElementById("tempChart")
+const ctx=document.getElementById("tempChart").getContext("2d")
 
 new Chart(ctx,{
 type:'line',
