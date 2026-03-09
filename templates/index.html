@@ -3,6 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <title>台灣天氣站</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,69 +13,44 @@
 body{
 font-family:Arial;
 margin:0;
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:white;
+display:flex;
+justify-content:center;
 }
 
 .container{
+max-width:600px;
+padding:30px;
 text-align:center;
-background:rgba(0,0,0,0.35);
-padding:40px;
-border-radius:20px;
-width:520px;
-}
-
-.search-box{
-position:relative;
-display:inline-block;
 }
 
 input{
-padding:12px;
-border-radius:10px;
+padding:10px;
+border-radius:8px;
 border:none;
-width:260px;
+width:220px;
 }
 
 button{
-padding:10px 20px;
+padding:10px 15px;
 border:none;
-border-radius:10px;
+border-radius:8px;
 background:#ffcc00;
-margin-top:15px;
+margin:10px;
 cursor:pointer;
 }
 
-.location-btn{
-background:#00e5ff;
-}
-
-.autocomplete{
-position:absolute;
-top:45px;
-left:0;
-background:white;
-color:black;
-width:260px;
-border-radius:10px;
-max-height:200px;
-overflow-y:auto;
-}
-
-.autocomplete div{
-padding:8px;
-cursor:pointer;
+.weather-card{
+background:rgba(255,255,255,0.2);
+padding:20px;
+border-radius:15px;
 }
 
 .forecast{
 display:flex;
-gap:10px;
 overflow-x:auto;
-margin-top:15px;
+gap:10px;
 }
 
 .day{
@@ -102,23 +78,17 @@ margin-top:20px;
 
 <form method="post">
 
-<div class="search-box">
-
 <input id="cityInput" name="city" placeholder="輸入城市 / 行政區">
 
-<div id="autocomplete" class="autocomplete"></div>
+<button>查詢</button>
 
-</div>
-
-<br>
-
-<button type="submit">查詢</button>
-
-<button type="button" class="location-btn" onclick="gps()">📍定位</button>
+<button type="button" onclick="gps()">📍定位</button>
 
 </form>
 
 {% if weather %}
+
+<div class="weather-card">
 
 <h2>{{weather.city}}</h2>
 
@@ -130,7 +100,10 @@ margin-top:20px;
 
 <p>濕度 {{weather.humidity}}%</p>
 
+</div>
+
 {% endif %}
+
 
 {% if today %}
 
@@ -143,8 +116,11 @@ margin-top:20px;
 <div class="day">
 
 <p>{{t.time}}</p>
+
 <img src="https://openweathermap.org/img/wn/{{t.icon}}@2x.png">
+
 <p>{{t.temp}}°C</p>
+
 <p>🌧 {{t.rain}}%</p>
 
 </div>
@@ -157,6 +133,7 @@ margin-top:20px;
 
 {% endif %}
 
+
 {% if week %}
 
 <h3>未來7天</h3>
@@ -168,7 +145,9 @@ margin-top:20px;
 <div class="day">
 
 <p>{{d.date}}</p>
+
 <img src="https://openweathermap.org/img/wn/{{d.icon}}@2x.png">
+
 <p>{{d.temp}}°C</p>
 
 </div>
@@ -193,48 +172,16 @@ window.location.href="/?lat="+pos.coords.latitude+"&lon="+pos.coords.longitude
 
 }
 
-const cities={{districts|tojson}}
-
-const input=document.getElementById("cityInput")
-const box=document.getElementById("autocomplete")
-
-input.addEventListener("input",function(){
-
-let val=this.value
-box.innerHTML=""
-
-if(!val) return
-
-cities.forEach(city=>{
-
-if(city.includes(val)){
-
-let div=document.createElement("div")
-div.textContent=city
-
-div.onclick=function(){
-input.value=city
-box.innerHTML=""
-}
-
-box.appendChild(div)
-
-}
-
-})
-
-})
-
 {% if today %}
 
-const ctx=document.getElementById("tempChart")
+const ctx=document.getElementById('tempChart')
 
 new Chart(ctx,{
-type:"line",
+type:'line',
 data:{
 labels:[{% for t in today %}"{{t.time}}",{% endfor %}],
 datasets:[{
-label:"溫度",
+label:'溫度',
 data:[{% for t in today %}{{t.temp}},{% endfor %}],
 borderWidth:3
 }]
@@ -246,7 +193,9 @@ borderWidth:3
 let hour=new Date().getHours()
 
 if(hour>=18||hour<=6){
+
 document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
+
 }
 
 </script>
