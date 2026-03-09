@@ -4,10 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-
-<title>台灣天氣站</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>台灣天氣系統</title>
 
 <style>
 
@@ -19,21 +16,21 @@ display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-transition:0.5s;
+margin:0;
 }
 
 .container{
-background:rgba(0,0,0,0.3);
+background:rgba(0,0,0,0.4);
 padding:40px;
 border-radius:20px;
-text-align:center;
 width:420px;
+text-align:center;
 }
 
 input{
 padding:10px;
-border-radius:8px;
 border:none;
+border-radius:8px;
 width:220px;
 }
 
@@ -42,8 +39,8 @@ padding:10px 20px;
 border:none;
 border-radius:8px;
 background:#ffcc00;
-margin-top:10px;
 cursor:pointer;
+margin-top:10px;
 }
 
 .autocomplete{
@@ -51,6 +48,8 @@ background:white;
 color:black;
 border-radius:8px;
 margin-top:5px;
+max-height:200px;
+overflow:auto;
 }
 
 .autocomplete div{
@@ -62,10 +61,18 @@ cursor:pointer;
 background:#eee;
 }
 
-canvas{
-background:white;
-border-radius:10px;
+.forecast{
+display:flex;
+gap:10px;
+overflow-x:auto;
 margin-top:20px;
+}
+
+.day{
+background:rgba(255,255,255,0.2);
+padding:10px;
+border-radius:10px;
+min-width:120px;
 }
 
 </style>
@@ -76,7 +83,7 @@ margin-top:20px;
 
 <div class="container">
 
-<h1>🌤 台灣天氣查詢</h1>
+<h1>🌤 台灣天氣系統</h1>
 
 <form method="post">
 
@@ -103,14 +110,38 @@ margin-top:20px;
 
 {% endif %}
 
-<canvas id="tempChart"></canvas>
+
+{% if forecast %}
+
+<h3>未來36小時</h3>
+
+<div class="forecast">
+
+{% for f in forecast %}
+
+<div class="day">
+
+<p>{{f.start}}</p>
+
+<p>{{f.wx}}</p>
+
+<p>{{f.temp}}°C</p>
+
+<p>🌧 {{f.rain}}%</p>
 
 </div>
 
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</div>
 
 <script>
 
-const cities={{districts|tojson}}
+const cities={{districts | tojson}}
 
 const input=document.getElementById("cityInput")
 
@@ -146,24 +177,6 @@ box.appendChild(div)
 })
 
 })
-
-{% if temps %}
-
-const ctx=document.getElementById('tempChart')
-
-new Chart(ctx,{
-type:'line',
-data:{
-labels:{{times|tojson}},
-datasets:[{
-label:'溫度',
-data:{{temps|tojson}},
-borderWidth:3
-}]
-}
-})
-
-{% endif %}
 
 
 // 夜間模式

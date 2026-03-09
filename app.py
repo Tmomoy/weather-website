@@ -6,21 +6,17 @@ app = Flask(__name__)
 
 API_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
-
 @app.route("/", methods=["GET","POST"])
 def index():
 
     weather=None
-    temps=[]
-    times=[]
+    forecast=[]
 
     if request.method=="POST":
 
         search=request.form.get("city","").strip()
 
-        display_name=search
-
-        # 行政區轉縣市
+        # 行政區轉城市
         if search in district_city_map:
             city=district_city_map[search]
         else:
@@ -42,28 +38,32 @@ def index():
             location=data["records"]["location"][0]
 
             weather={
-                "city":display_name,
+                "city":search,
                 "wx":location["weatherElement"][0]["time"][0]["parameter"]["parameterName"],
                 "rain":location["weatherElement"][1]["time"][0]["parameter"]["parameterName"],
                 "temp":location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
             }
 
-            # 模擬溫度曲線資料
-            temps=[weather["temp"],weather["temp"],weather["temp"]]
-            times=["現在","12小時","24小時"]
+            times=location["weatherElement"][0]["time"]
+
+            for t in times:
+
+                forecast.append({
+                    "start":t["startTime"][5:16],
+                    "wx":t["parameter"]["parameterName"],
+                    "rain":location["weatherElement"][1]["time"][0]["parameter"]["parameterName"],
+                    "temp":location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
+                })
 
         except:
-
             weather=None
 
     return render_template(
         "index.html",
         weather=weather,
-        temps=temps,
-        times=times,
+        forecast=forecast,
         districts=districts
     )
-
 
 if __name__=="__main__":
     app.run(debug=True)
