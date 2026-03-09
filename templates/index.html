@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
@@ -12,17 +13,21 @@
 
 body{
 font-family:Arial;
-margin:0;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:white;
 display:flex;
 justify-content:center;
+align-items:center;
+height:100vh;
+transition:0.5s;
 }
 
 .container{
-max-width:600px;
-padding:30px;
+background:rgba(0,0,0,0.3);
+padding:40px;
+border-radius:20px;
 text-align:center;
+width:420px;
 }
 
 input{
@@ -33,31 +38,28 @@ width:220px;
 }
 
 button{
-padding:10px 15px;
+padding:10px 20px;
 border:none;
 border-radius:8px;
 background:#ffcc00;
-margin:10px;
+margin-top:10px;
 cursor:pointer;
 }
 
-.weather-card{
-background:rgba(255,255,255,0.2);
-padding:20px;
-border-radius:15px;
+.autocomplete{
+background:white;
+color:black;
+border-radius:8px;
+margin-top:5px;
 }
 
-.forecast{
-display:flex;
-overflow-x:auto;
-gap:10px;
+.autocomplete div{
+padding:6px;
+cursor:pointer;
 }
 
-.day{
-background:rgba(255,255,255,0.2);
-padding:10px;
-border-radius:10px;
-min-width:80px;
+.autocomplete div:hover{
+background:#eee;
 }
 
 canvas{
@@ -74,121 +76,97 @@ margin-top:20px;
 
 <div class="container">
 
-<h1>🌤 台灣天氣站</h1>
+<h1>🌤 台灣天氣查詢</h1>
 
 <form method="post">
 
-<input id="cityInput" name="city" placeholder="輸入城市 / 行政區">
+<input id="cityInput" name="city" placeholder="輸入城市或行政區">
 
-<button>查詢</button>
+<div id="autocomplete" class="autocomplete"></div>
 
-<button type="button" onclick="gps()">📍定位</button>
+<br>
+
+<button type="submit">查詢天氣</button>
 
 </form>
 
-{% if weather %}
 
-<div class="weather-card">
+{% if weather %}
 
 <h2>{{weather.city}}</h2>
 
-<img src="https://openweathermap.org/img/wn/{{weather.icon}}@2x.png">
+<p>天氣：{{weather.wx}}</p>
 
-<p>{{weather.temp}}°C</p>
+<p>溫度：{{weather.temp}}°C</p>
 
-<p>{{weather.description}}</p>
-
-<p>濕度 {{weather.humidity}}%</p>
-
-</div>
+<p>降雨機率：{{weather.rain}}%</p>
 
 {% endif %}
-
-
-{% if today %}
-
-<h3>今日24小時</h3>
-
-<div class="forecast">
-
-{% for t in today %}
-
-<div class="day">
-
-<p>{{t.time}}</p>
-
-<img src="https://openweathermap.org/img/wn/{{t.icon}}@2x.png">
-
-<p>{{t.temp}}°C</p>
-
-<p>🌧 {{t.rain}}%</p>
-
-</div>
-
-{% endfor %}
-
-</div>
 
 <canvas id="tempChart"></canvas>
 
-{% endif %}
-
-
-{% if week %}
-
-<h3>未來7天</h3>
-
-<div class="forecast">
-
-{% for d in week %}
-
-<div class="day">
-
-<p>{{d.date}}</p>
-
-<img src="https://openweathermap.org/img/wn/{{d.icon}}@2x.png">
-
-<p>{{d.temp}}°C</p>
-
 </div>
 
-{% endfor %}
-
-</div>
-
-{% endif %}
-
-</div>
 
 <script>
 
-function gps(){
+const cities={{districts|tojson}}
 
-navigator.geolocation.getCurrentPosition(function(pos){
+const input=document.getElementById("cityInput")
 
-window.location.href="/?lat="+pos.coords.latitude+"&lon="+pos.coords.longitude
+const box=document.getElementById("autocomplete")
 
-})
+input.addEventListener("input",function(){
+
+let val=this.value
+
+box.innerHTML=""
+
+if(!val) return
+
+cities.forEach(city=>{
+
+if(city.includes(val)){
+
+let div=document.createElement("div")
+
+div.textContent=city
+
+div.onclick=function(){
+
+input.value=city
+box.innerHTML=""
 
 }
 
-{% if today %}
+box.appendChild(div)
+
+}
+
+})
+
+})
+
+{% if temps %}
 
 const ctx=document.getElementById('tempChart')
 
 new Chart(ctx,{
 type:'line',
 data:{
-labels:[{% for t in today %}"{{t.time}}",{% endfor %}],
+labels:{{times|tojson}},
 datasets:[{
 label:'溫度',
-data:[{% for t in today %}{{t.temp}},{% endfor %}],
+data:{{temps|tojson}},
 borderWidth:3
 }]
 }
 })
 
 {% endif %}
+
+
+// 夜間模式
 
 let hour=new Date().getHours()
 
@@ -201,4 +179,5 @@ document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
 </script>
 
 </body>
+
 </html>
