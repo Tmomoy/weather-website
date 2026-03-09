@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
-<title>天氣預報站</title>
+<title>台灣天氣站</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -69,10 +70,6 @@ padding:8px;
 cursor:pointer;
 }
 
-.autocomplete div:hover{
-background:#eee;
-}
-
 .forecast{
 display:flex;
 gap:10px;
@@ -85,27 +82,29 @@ background:rgba(255,255,255,0.2);
 padding:10px;
 border-radius:10px;
 min-width:80px;
-text-align:center;
 }
 
-.day img{
-width:40px;
+canvas{
+background:white;
+border-radius:10px;
+margin-top:20px;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>🌤 天氣預報站</h1>
+<h1>🌤 台灣天氣站</h1>
 
 <form method="post">
 
 <div class="search-box">
 
-<input id="cityInput" name="city" placeholder="輸入城市或地區">
+<input id="cityInput" name="city" placeholder="輸入城市 / 行政區">
 
 <div id="autocomplete" class="autocomplete"></div>
 
@@ -113,9 +112,9 @@ width:40px;
 
 <br>
 
-<button type="submit">查詢天氣</button>
+<button type="submit">查詢</button>
 
-<button type="button" class="location-btn" onclick="getLocation()">📍 我的定位</button>
+<button type="button" class="location-btn" onclick="gps()">📍定位</button>
 
 </form>
 
@@ -126,7 +125,9 @@ width:40px;
 <img src="https://openweathermap.org/img/wn/{{weather.icon}}@2x.png">
 
 <p>{{weather.temp}}°C</p>
+
 <p>{{weather.description}}</p>
+
 <p>濕度 {{weather.humidity}}%</p>
 
 {% endif %}
@@ -144,6 +145,7 @@ width:40px;
 <p>{{t.time}}</p>
 <img src="https://openweathermap.org/img/wn/{{t.icon}}@2x.png">
 <p>{{t.temp}}°C</p>
+<p>🌧 {{t.rain}}%</p>
 
 </div>
 
@@ -155,11 +157,33 @@ width:40px;
 
 {% endif %}
 
+{% if week %}
+
+<h3>未來7天</h3>
+
+<div class="forecast">
+
+{% for d in week %}
+
+<div class="day">
+
+<p>{{d.date}}</p>
+<img src="https://openweathermap.org/img/wn/{{d.icon}}@2x.png">
+<p>{{d.temp}}°C</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
 </div>
 
 <script>
 
-function getLocation(){
+function gps(){
 
 navigator.geolocation.getCurrentPosition(function(pos){
 
@@ -169,31 +193,28 @@ window.location.href="/?lat="+pos.coords.latitude+"&lon="+pos.coords.longitude
 
 }
 
-const cities = {{ districts | tojson }}
+const cities={{districts|tojson}}
 
-const input = document.getElementById("cityInput")
-const box = document.getElementById("autocomplete")
+const input=document.getElementById("cityInput")
+const box=document.getElementById("autocomplete")
 
-input.addEventListener("input", function(){
+input.addEventListener("input",function(){
 
-let val = this.value
-box.innerHTML = ""
+let val=this.value
+box.innerHTML=""
 
 if(!val) return
 
-cities.forEach(city => {
+cities.forEach(city=>{
 
 if(city.includes(val)){
 
-let div = document.createElement("div")
+let div=document.createElement("div")
+div.textContent=city
 
-div.textContent = city
-
-div.onclick = function(){
-
-input.value = city
-box.innerHTML = ""
-
+div.onclick=function(){
+input.value=city
+box.innerHTML=""
 }
 
 box.appendChild(div)
@@ -203,6 +224,30 @@ box.appendChild(div)
 })
 
 })
+
+{% if today %}
+
+const ctx=document.getElementById("tempChart")
+
+new Chart(ctx,{
+type:"line",
+data:{
+labels:[{% for t in today %}"{{t.time}}",{% endfor %}],
+datasets:[{
+label:"溫度",
+data:[{% for t in today %}{{t.temp}},{% endfor %}],
+borderWidth:3
+}]
+}
+})
+
+{% endif %}
+
+let hour=new Date().getHours()
+
+if(hour>=18||hour<=6){
+document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
+}
 
 </script>
 

@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 API_KEY = os.environ.get("WEATHER_API_KEY")
 
-# 中文城市轉英文
 city_map = {
 
 "台北":"Taipei",
@@ -45,7 +44,6 @@ city_map = {
 "連江":"Lienchiang"
 }
 
-
 @app.route("/", methods=["GET","POST"])
 def index():
 
@@ -58,7 +56,6 @@ def index():
 
     try:
 
-        # GPS定位
         if lat and lon:
 
             weather_url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric&lang=zh_tw"
@@ -73,11 +70,9 @@ def index():
             else:
                 city="台北"
 
-            # 行政區轉城市
             if city in district_city_map:
                 city = district_city_map[city]
 
-            # 中文轉英文
             if city in city_map:
                 city_query = city_map[city]
             else:
@@ -93,20 +88,12 @@ def index():
 
         if str(weather_data.get("cod"))=="200":
 
-            sunrise=datetime.fromtimestamp(weather_data["sys"]["sunrise"]).strftime("%H:%M")
-            sunset=datetime.fromtimestamp(weather_data["sys"]["sunset"]).strftime("%H:%M")
-
             weather={
                 "city":city_name,
                 "temp":round(weather_data["main"]["temp"]),
-                "feels":round(weather_data["main"]["feels_like"]),
                 "description":weather_data["weather"][0]["description"],
                 "icon":weather_data["weather"][0]["icon"],
-                "humidity":weather_data["main"]["humidity"],
-                "pressure":weather_data["main"]["pressure"],
-                "wind":weather_data["wind"]["speed"],
-                "sunrise":sunrise,
-                "sunset":sunset
+                "humidity":weather_data["main"]["humidity"]
             }
 
             # 今日24小時
@@ -115,7 +102,8 @@ def index():
                 today.append({
                     "time":item["dt_txt"][11:16],
                     "temp":round(item["main"]["temp"]),
-                    "icon":item["weather"][0]["icon"]
+                    "icon":item["weather"][0]["icon"],
+                    "rain":round(item.get("pop",0)*100)
                 })
 
             # 未來7天
@@ -151,8 +139,5 @@ def index():
         districts=districts
     )
 
-
 if __name__=="__main__":
-
-    port=int(os.environ.get("PORT",10000))
-    app.run(host="0.0.0.0",port=port)
+    app.run(debug=True)
