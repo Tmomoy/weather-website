@@ -4,67 +4,84 @@ from taiwan_districts import districts, district_city_map
 
 app = Flask(__name__)
 
-API_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
+API_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
 
-@app.route("/", methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
 
-    weather=None
-    forecast=[]
-    temps=[]
-    times=[]
+    weather = None
+    forecast = []
+    temps = []
+    times = []
 
     # 預設城市
-    search="臺北市"
+    search = "臺北市"
 
-    if request.method=="POST":
-        search=request.form.get("city")
+    if request.method == "POST":
+        search = request.form.get("city", "").strip()
 
+    # 如果搜尋的是行政區 → 轉換成縣市
     if search in district_city_map:
-        city=district_city_map[search]
+        city = district_city_map[search]
     else:
-        city=search
+        city = search
 
-    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+    # 自動補「市」
+    if city in [
+        "台北","臺北","新北","桃園","台中","臺中","台南","臺南",
+        "高雄","基隆","新竹","嘉義"
+    ]:
+        city = city.replace("台", "臺") + "市"
 
-    params={
-        "Authorization":API_KEY,
-        "locationName":city
+    # 縣
+    if city in [
+        "苗栗","彰化","南投","雲林","屏東",
+        "宜蘭","花蓮","台東","臺東"
+    ]:
+        city = city.replace("台","臺") + "縣"
+
+    url = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+
+    params = {
+        "Authorization": API_KEY,
+        "locationName": city
     }
-
-    r=requests.get(url,params=params)
-
-    data=r.json()
 
     try:
 
-        location=data["records"]["location"][0]
+        r = requests.get(url, params=params, timeout=10)
+        data = r.json()
 
-        weather={
-            "city":search,
-            "wx":location["weatherElement"][0]["time"][0]["parameter"]["parameterName"],
-            "temp":location["weatherElement"][2]["time"][0]["parameter"]["parameterName"],
-            "rain":location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
+        location = data["records"]["location"][0]
+
+        weather = {
+            "city": search,
+            "wx": location["weatherElement"][0]["time"][0]["parameter"]["parameterName"],
+            "temp": location["weatherElement"][2]["time"][0]["parameter"]["parameterName"],
+            "rain": location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
         }
 
-        for i,t in enumerate(location["weatherElement"][0]["time"]):
+        # 未來天氣
+        for i, t in enumerate(location["weatherElement"][0]["time"]):
 
-            temp=location["weatherElement"][2]["time"][i]["parameter"]["parameterName"]
-            rain=location["weatherElement"][1]["time"][i]["parameter"]["parameterName"]
+            temp = location["weatherElement"][2]["time"][i]["parameter"]["parameterName"]
+            rain = location["weatherElement"][1]["time"][i]["parameter"]["parameterName"]
 
             forecast.append({
-                "time":t["startTime"][5:16],
-                "wx":t["parameter"]["parameterName"],
-                "temp":temp,
-                "rain":rain
+                "time": t["startTime"][5:16],
+                "wx": t["parameter"]["parameterName"],
+                "temp": temp,
+                "rain": rain
             })
 
             temps.append(int(temp))
             times.append(t["startTime"][11:16])
 
-    except:
-        weather=None
+    except Exception as e:
+
+        print("Weather API error:", e)
+        weather = None
 
     return render_template(
         "index.html",
@@ -76,5 +93,5 @@ def index():
     )
 
 
-if __name__=="__main__":
-    app.run()
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
