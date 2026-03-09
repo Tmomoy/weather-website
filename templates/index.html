@@ -4,23 +4,25 @@
 <head>
 
 <meta charset="UTF-8">
-<title>台灣天氣系統</title>
+<title>台灣天氣系統 V4</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
 font-family:Arial;
+margin:0;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
 color:white;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
-margin:0;
+min-height:100vh;
 }
 
 .container{
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
 width:420px;
@@ -75,6 +77,12 @@ border-radius:10px;
 min-width:120px;
 }
 
+canvas{
+background:white;
+border-radius:10px;
+margin-top:20px;
+}
+
 </style>
 
 </head>
@@ -94,6 +102,8 @@ min-width:120px;
 <br>
 
 <button type="submit">查詢天氣</button>
+
+<button type="button" onclick="getLocation()">📍 GPS</button>
 
 </form>
 
@@ -137,6 +147,13 @@ min-width:120px;
 
 {% endif %}
 
+
+{% if temps %}
+
+<canvas id="tempChart"></canvas>
+
+{% endif %}
+
 </div>
 
 <script>
@@ -144,13 +161,11 @@ min-width:120px;
 const cities={{districts | tojson}}
 
 const input=document.getElementById("cityInput")
-
 const box=document.getElementById("autocomplete")
 
 input.addEventListener("input",function(){
 
 let val=this.value
-
 box.innerHTML=""
 
 if(!val) return
@@ -177,6 +192,35 @@ box.appendChild(div)
 })
 
 })
+
+function getLocation(){
+
+navigator.geolocation.getCurrentPosition(function(pos){
+
+alert("定位成功 (示範版)")
+
+})
+
+}
+
+
+{% if temps %}
+
+const ctx=document.getElementById("tempChart")
+
+new Chart(ctx,{
+type:'line',
+data:{
+labels:{{times | tojson}},
+datasets:[{
+label:'溫度',
+data:{{temps | tojson}},
+borderWidth:3
+}]
+}
+})
+
+{% endif %}
 
 
 // 夜間模式

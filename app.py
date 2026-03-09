@@ -11,12 +11,13 @@ def index():
 
     weather=None
     forecast=[]
+    temps=[]
+    times=[]
 
     if request.method=="POST":
 
         search=request.form.get("city","").strip()
 
-        # 行政區轉城市
         if search in district_city_map:
             city=district_city_map[search]
         else:
@@ -30,7 +31,6 @@ def index():
         }
 
         r=requests.get(url,params=params)
-
         data=r.json()
 
         try:
@@ -44,16 +44,22 @@ def index():
                 "temp":location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
             }
 
-            times=location["weatherElement"][0]["time"]
+            times_data=location["weatherElement"][0]["time"]
 
-            for t in times:
+            for i,t in enumerate(times_data):
+
+                temp=location["weatherElement"][2]["time"][i]["parameter"]["parameterName"]
+                rain=location["weatherElement"][1]["time"][i]["parameter"]["parameterName"]
 
                 forecast.append({
                     "start":t["startTime"][5:16],
                     "wx":t["parameter"]["parameterName"],
-                    "rain":location["weatherElement"][1]["time"][0]["parameter"]["parameterName"],
-                    "temp":location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
+                    "temp":temp,
+                    "rain":rain
                 })
+
+                temps.append(int(temp))
+                times.append(t["startTime"][11:16])
 
         except:
             weather=None
@@ -62,6 +68,8 @@ def index():
         "index.html",
         weather=weather,
         forecast=forecast,
+        temps=temps,
+        times=times,
         districts=districts
     )
 
