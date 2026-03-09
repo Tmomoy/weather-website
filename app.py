@@ -15,31 +15,28 @@ def index():
     temps = []
     times = []
 
-    # 預設城市
     search = "臺北市"
 
     if request.method == "POST":
         search = request.form.get("city", "").strip()
 
-    # 如果搜尋的是行政區 → 轉換成縣市
+    if not search:
+        search = "臺北市"
+
+    # 行政區轉縣市
     if search in district_city_map:
         city = district_city_map[search]
     else:
         city = search
 
-    # 自動補「市」
-    if city in [
-        "台北","臺北","新北","桃園","台中","臺中","台南","臺南",
-        "高雄","基隆","新竹","嘉義"
-    ]:
-        city = city.replace("台", "臺") + "市"
+    # 自動修正縣市名稱
+    city = city.replace("台", "臺")
 
-    # 縣
-    if city in [
-        "苗栗","彰化","南投","雲林","屏東",
-        "宜蘭","花蓮","台東","臺東"
-    ]:
-        city = city.replace("台","臺") + "縣"
+    if not city.endswith("市") and not city.endswith("縣"):
+        if city in ["臺北","新北","桃園","臺中","臺南","高雄","基隆","新竹","嘉義"]:
+            city += "市"
+        else:
+            city += "縣"
 
     url = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
@@ -51,9 +48,18 @@ def index():
     try:
 
         r = requests.get(url, params=params, timeout=10)
+
+        if r.status_code != 200:
+            raise Exception("API request failed")
+
         data = r.json()
 
-        location = data["records"]["location"][0]
+        locations = data.get("records", {}).get("location", [])
+
+        if not locations:
+            raise Exception("No location data")
+
+        location = locations[0]
 
         weather = {
             "city": search,
@@ -62,7 +68,6 @@ def index():
             "rain": location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
         }
 
-        # 未來天氣
         for i, t in enumerate(location["weatherElement"][0]["time"]):
 
             temp = location["weatherElement"][2]["time"][i]["parameter"]["parameterName"]
@@ -81,7 +86,13 @@ def index():
     except Exception as e:
 
         print("Weather API error:", e)
-        weather = None
+
+        weather = {
+            "city": search,
+            "wx": "查詢不到資料",
+            "temp": "--",
+            "rain": "--"
+        }
 
     return render_template(
         "index.html",
