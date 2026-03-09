@@ -27,6 +27,11 @@ border-radius:20px;
 width:520px;
 }
 
+.search-box{
+position:relative;
+display:inline-block;
+}
+
 input{
 padding:12px;
 border-radius:10px;
@@ -49,10 +54,14 @@ background:#00e5ff;
 
 .autocomplete{
 position:absolute;
+top:45px;
+left:0;
 background:white;
 color:black;
 width:260px;
 border-radius:10px;
+max-height:200px;
+overflow-y:auto;
 }
 
 .autocomplete div{
@@ -60,10 +69,15 @@ padding:8px;
 cursor:pointer;
 }
 
+.autocomplete div:hover{
+background:#eee;
+}
+
 .forecast{
 display:flex;
 gap:10px;
 overflow-x:auto;
+margin-top:15px;
 }
 
 .day{
@@ -71,6 +85,11 @@ background:rgba(255,255,255,0.2);
 padding:10px;
 border-radius:10px;
 min-width:80px;
+text-align:center;
+}
+
+.day img{
+width:40px;
 }
 
 </style>
@@ -84,9 +103,13 @@ min-width:80px;
 
 <form method="post">
 
+<div class="search-box">
+
 <input id="cityInput" name="city" placeholder="輸入城市或地區">
 
 <div id="autocomplete" class="autocomplete"></div>
+
+</div>
 
 <br>
 
@@ -146,29 +169,31 @@ window.location.href="/?lat="+pos.coords.latitude+"&lon="+pos.coords.longitude
 
 }
 
-const cities={{districts | tojson}}
+const cities = {{ districts | tojson }}
 
-const input=document.getElementById("cityInput")
-const box=document.getElementById("autocomplete")
+const input = document.getElementById("cityInput")
+const box = document.getElementById("autocomplete")
 
-input.addEventListener("input",function(){
+input.addEventListener("input", function(){
 
-let val=this.value
-box.innerHTML=""
+let val = this.value
+box.innerHTML = ""
 
 if(!val) return
 
-cities.forEach(city=>{
+cities.forEach(city => {
 
 if(city.includes(val)){
 
-let div=document.createElement("div")
+let div = document.createElement("div")
 
-div.textContent=city
+div.textContent = city
 
-div.onclick=function(){
-input.value=city
-box.innerHTML=""
+div.onclick = function(){
+
+input.value = city
+box.innerHTML = ""
+
 }
 
 box.appendChild(div)

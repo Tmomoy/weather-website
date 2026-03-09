@@ -8,6 +8,43 @@ app = Flask(__name__)
 
 API_KEY = os.environ.get("WEATHER_API_KEY")
 
+# 中文城市轉英文
+city_map = {
+
+"台北":"Taipei",
+"臺北":"Taipei",
+
+"新北":"New Taipei",
+
+"桃園":"Taoyuan",
+
+"台中":"Taichung",
+"臺中":"Taichung",
+
+"台南":"Tainan",
+"臺南":"Tainan",
+
+"高雄":"Kaohsiung",
+
+"基隆":"Keelung",
+"新竹":"Hsinchu",
+"嘉義":"Chiayi",
+
+"屏東":"Pingtung",
+"宜蘭":"Yilan",
+"花蓮":"Hualien",
+"台東":"Taitung",
+
+"南投":"Nantou",
+"彰化":"Changhua",
+"苗栗":"Miaoli",
+"雲林":"Yunlin",
+
+"澎湖":"Penghu",
+"金門":"Kinmen",
+"連江":"Lienchiang"
+}
+
 
 @app.route("/", methods=["GET","POST"])
 def index():
@@ -36,11 +73,15 @@ def index():
             else:
                 city="台北"
 
-            # 如果輸入的是區 / 鄉 / 鎮
+            # 行政區轉城市
             if city in district_city_map:
-                city_query=district_city_map[city]
+                city = district_city_map[city]
+
+            # 中文轉英文
+            if city in city_map:
+                city_query = city_map[city]
             else:
-                city_query=city
+                city_query = city
 
             weather_url=f"https://api.openweathermap.org/data/2.5/weather?q={city_query},TW&appid={API_KEY}&units=metric&lang=zh_tw"
             forecast_url=f"https://api.openweathermap.org/data/2.5/forecast?q={city_query},TW&appid={API_KEY}&units=metric&lang=zh_tw"
@@ -68,6 +109,7 @@ def index():
                 "sunset":sunset
             }
 
+            # 今日24小時
             for item in forecast_data["list"][:8]:
 
                 today.append({
@@ -76,6 +118,7 @@ def index():
                     "icon":item["weather"][0]["icon"]
                 })
 
+            # 未來7天
             days={}
 
             for item in forecast_data["list"]:
