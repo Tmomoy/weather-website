@@ -25,7 +25,7 @@ def weather():
 
     search=request.form.get("city","").strip()
 
-    # 368行政區 → 縣市
+    # 行政區 → 縣市
     if search in district_city_map:
         city=district_city_map[search]
     else:
@@ -67,37 +67,39 @@ def weather():
         r=requests.get(url,params=params,verify=False)
         data=r.json()
 
-        location=data["records"]["location"][0]
+        if "records" in data:
 
-        wx=location["weatherElement"][0]["time"]
-        rain=location["weatherElement"][1]["time"]
-        temp=location["weatherElement"][2]["time"]
+            location=data["records"]["location"][0]
 
-        weather={
-            "city":city,
-            "wx":wx[0]["parameter"]["parameterName"],
-            "temp":temp[0]["parameter"]["parameterName"],
-            "rain":rain[0]["parameter"]["parameterName"]
-        }
+            wx=location["weatherElement"][0]["time"]
+            rain=location["weatherElement"][1]["time"]
+            temp=location["weatherElement"][2]["time"]
 
-        for i in range(len(temp)):
+            weather={
+                "city":city,
+                "wx":wx[0]["parameter"]["parameterName"],
+                "temp":temp[0]["parameter"]["parameterName"],
+                "rain":rain[0]["parameter"]["parameterName"]
+            }
 
-            start=temp[i]["startTime"]
+            for i in range(len(temp)):
 
-            date=start[5:10]
-            time=start[11:16]
+                start=temp[i]["startTime"]
 
-            forecast.append({
-                "date":date,
-                "time":time,
-                "temp":temp[i]["parameter"]["parameterName"],
-                "rain":rain[i]["parameter"]["parameterName"]
-            })
+                date=start[5:10]
+                time=start[11:16]
 
-            temps.append(int(temp[i]["parameter"]["parameterName"]))
-            rains.append(int(rain[i]["parameter"]["parameterName"]))
-            humidity.append(60)
-            times.append(time)
+                forecast.append({
+                    "date":date,
+                    "time":time,
+                    "temp":temp[i]["parameter"]["parameterName"],
+                    "rain":rain[i]["parameter"]["parameterName"]
+                })
+
+                temps.append(int(temp[i]["parameter"]["parameterName"]))
+                rains.append(int(rain[i]["parameter"]["parameterName"]))
+                humidity.append(60)
+                times.append(time)
 
 
         # ========================
@@ -114,20 +116,22 @@ def weather():
         r7=requests.get(url7,params=params7,verify=False)
         data7=r7.json()
 
-        location7=data7["records"]["location"][0]
+        if "records" in data7:
 
-        wx7=location7["weatherElement"][0]["time"]
-        temp7=location7["weatherElement"][2]["time"]
+            location7=data7["records"]["location"][0]
 
-        for i in range(0,len(wx7),2):
+            wx7=location7["weatherElement"][0]["time"]
+            temp7=location7["weatherElement"][2]["time"]
 
-            day=wx7[i]["startTime"][5:10]
+            for i in range(0,len(wx7),2):
 
-            forecast7.append({
-                "day":day,
-                "wx":wx7[i]["parameter"]["parameterName"],
-                "temp":temp7[i]["parameter"]["parameterName"]
-            })
+                day=wx7[i]["startTime"][5:10]
+
+                forecast7.append({
+                    "day":day,
+                    "wx":wx7[i]["parameter"]["parameterName"],
+                    "temp":temp7[i]["parameter"]["parameterName"]
+                })
 
 
     except Exception as e:
