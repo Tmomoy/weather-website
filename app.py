@@ -9,7 +9,6 @@ API_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
 @app.route("/")
 def home():
-
     return render_template("index.html")
 
 
