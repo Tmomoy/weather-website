@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 import requests
 import os
+import urllib3
+
+urllib3.disable_warnings()
 
 app = Flask(__name__)
 
@@ -48,7 +51,8 @@ def weather():
             "locationName":city
         }
 
-        r=requests.get(url,params=params,timeout=10)
+        # 唯一修改的地方
+        r=requests.get(url,params=params,timeout=10,verify=False)
 
         data=r.json()
 
