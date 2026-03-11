@@ -29,46 +29,15 @@
 
 </form>
 
+<div class="radar">
+
+<h3>🌧 即時雷達</h3>
+
+<img src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png" width="300">
+
 </div>
 
-<script>
-
-const cities={{districts|tojson}}
-
-const input=document.getElementById("cityInput")
-const box=document.getElementById("autocomplete")
-
-input.addEventListener("input",function(){
-
-let val=this.value.trim()
-box.innerHTML=""
-
-if(!val) return
-
-cities.forEach(city=>{
-
-if(city.includes(val)){
-
-let div=document.createElement("div")
-
-div.textContent=city
-
-div.onclick=function(){
-
-input.value=city
-box.innerHTML=""
-
-}
-
-box.appendChild(div)
-
-}
-
-})
-
-})
-
-</script>
+</div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
