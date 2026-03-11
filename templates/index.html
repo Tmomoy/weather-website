@@ -4,7 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-<title>台灣天氣系統 </title>
+<title>台灣天氣系統</title>
 
 <style>
 
@@ -22,16 +22,16 @@ height:100vh;
 background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
-color:white;
 text-align:center;
-width:400px;
+color:white;
+width:420px;
 }
 
 input{
 padding:10px;
 border:none;
 border-radius:8px;
-width:220px;
+width:230px;
 }
 
 button{
@@ -81,7 +81,7 @@ background:#eee;
 
 <button type="submit">查詢天氣</button>
 
-<button type="button" onclick="getLocation()">📍 GPS</button>
+<button type="button" onclick="gps()">📍 GPS</button>
 
 </form>
 
@@ -125,9 +125,9 @@ box.appendChild(div)
 
 })
 
-function getLocation(){
+function gps(){
 
-navigator.geolocation.getCurrentPosition(function(pos){
+navigator.geolocation.getCurrentPosition(function(){
 
 alert("GPS功能示範")
 
