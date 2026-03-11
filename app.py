@@ -10,35 +10,35 @@ urllib3.disable_warnings()
 
 app = Flask(__name__)
 
-CWA_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
+CWA_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html",districts=districts)
 
 
-@app.route("/weather", methods=["POST"])
+@app.route("/weather",methods=["POST"])
 def weather():
 
-    today = datetime.now().strftime("%Y-%m-%d")
+    today=datetime.now().strftime("%Y-%m-%d")
 
-    search = request.form.get("city","").strip()
+    search=request.form.get("city","").strip()
 
-    # 行政區 → 縣市
+    # 368行政區 → 縣市
     if search in district_city_map:
-        city = district_city_map[search]
+        city=district_city_map[search]
     else:
-        city = search
+        city=search
 
-    city = city.replace("台","臺")
+    city=city.replace("台","臺")
 
     if not city.endswith("市") and not city.endswith("縣"):
 
         if city in ["臺北","新北","桃園","臺中","臺南","高雄","基隆","新竹","嘉義"]:
-            city += "市"
+            city+="市"
         else:
-            city += "縣"
+            city+="縣"
 
 
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
@@ -50,11 +50,12 @@ def weather():
     humidity=[]
     times=[]
 
+
     try:
 
-        # ==================
+        # ========================
         # 36小時預報
-        # ==================
+        # ========================
 
         url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
@@ -81,10 +82,14 @@ def weather():
 
         for i in range(len(temp)):
 
-            t=temp[i]["startTime"][11:16]
+            start=temp[i]["startTime"]
+
+            date=start[5:10]
+            time=start[11:16]
 
             forecast.append({
-                "time":t,
+                "date":date,
+                "time":time,
                 "temp":temp[i]["parameter"]["parameterName"],
                 "rain":rain[i]["parameter"]["parameterName"]
             })
@@ -92,12 +97,12 @@ def weather():
             temps.append(int(temp[i]["parameter"]["parameterName"]))
             rains.append(int(rain[i]["parameter"]["parameterName"]))
             humidity.append(60)
-            times.append(t)
+            times.append(time)
 
 
-        # ==================
+        # ========================
         # 7天預報
-        # ==================
+        # ========================
 
         url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-005"
 
@@ -114,7 +119,6 @@ def weather():
         wx7=location7["weatherElement"][0]["time"]
         temp7=location7["weatherElement"][2]["time"]
 
-        # 每兩筆資料取一天
         for i in range(0,len(wx7),2):
 
             day=wx7[i]["startTime"][5:10]
