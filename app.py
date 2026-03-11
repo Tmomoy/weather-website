@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import requests
 import urllib3
+import os
 from taiwan_districts import districts, district_city_map
 
 urllib3.disable_warnings()
@@ -15,7 +16,7 @@ def home():
     return render_template("index.html", districts=districts)
 
 
-@app.route("/weather",methods=["POST"])
+@app.route("/weather", methods=["POST"])
 def weather():
 
     search=request.form.get("city","").strip()
@@ -46,7 +47,12 @@ def weather():
     humidity=[]
     times=[]
 
-    weather=None
+    weather={
+        "city":city,
+        "wx":"查詢不到資料",
+        "temp":"--",
+        "rain":"--"
+    }
 
     try:
 
@@ -54,40 +60,37 @@ def weather():
 
         data=r.json()
 
-        location=data["records"]["location"][0]
+        locations=data.get("records",{}).get("location",[])
 
-        wx=location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
-        rain=location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
-        temp=location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
+        if locations:
 
-        weather={
-            "city":city,
-            "wx":wx,
-            "temp":temp,
-            "rain":rain
-        }
+            location=locations[0]
 
-        times_data=location["weatherElement"][2]["time"]
+            wx=location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
+            rain=location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
+            temp=location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
 
-        for t in times_data:
+            weather={
+                "city":city,
+                "wx":wx,
+                "temp":temp,
+                "rain":rain
+            }
 
-            temp=int(t["parameter"]["parameterName"])
+            times_data=location["weatherElement"][2]["time"]
 
-            temps.append(temp)
-            rains.append(int(rain))
-            humidity.append(60)
-            times.append(t["startTime"][11:16])
+            for t in times_data:
+
+                temp=int(t["parameter"]["parameterName"])
+
+                temps.append(temp)
+                rains.append(int(rain))
+                humidity.append(60)
+                times.append(t["startTime"][11:16])
 
     except Exception as e:
 
-        print(e)
-
-        weather={
-            "city":city,
-            "wx":"查詢不到資料",
-            "temp":"--",
-            "rain":"--"
-        }
+        print("Weather API error:",e)
 
     return render_template(
         "result.html",
@@ -100,5 +103,5 @@ def weather():
 
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0",port=10000)
+    port=int(os.environ.get("PORT",10000))
     app.run(host="0.0.0.0",port=port)

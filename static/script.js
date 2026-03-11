@@ -14,6 +14,8 @@ let city=data.address.city || data.address.county
 
 document.getElementById("cityInput").value=city
 
+document.querySelector("form").submit()
+
 })
 
 })
