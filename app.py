@@ -3,6 +3,8 @@ import requests
 import os
 import urllib3
 
+from taiwan_districts import districts, district_city_map
+
 urllib3.disable_warnings()
 
 app = Flask(__name__)
@@ -26,11 +28,24 @@ def home():
 @app.route("/weather", methods=["POST"])
 def weather():
 
-    city = request.form.get("city","臺北市")
+    # 使用者輸入
+    search = request.form.get("city","").strip()
+
+    # 368行政區 → 縣市
+    if search in district_city_map:
+        city = district_city_map[search]
+    else:
+        city = search
+
     city = city.replace("台","臺")
 
     if not city.endswith("市") and not city.endswith("縣"):
-        city += "市"
+
+        if city in ["臺北","新北","桃園","臺中","臺南","高雄","基隆","新竹","嘉義"]:
+            city += "市"
+        else:
+            city += "縣"
+
 
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
 
@@ -96,7 +111,7 @@ def weather():
 
         params7={
             "Authorization":CWA_KEY,
-            "locationsName":city   # 這是關鍵
+            "locationsName":city
         }
 
         r7=requests.get(url7,params=params7,verify=False,timeout=10)
