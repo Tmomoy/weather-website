@@ -7,7 +7,7 @@
 <title>天氣結果</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <style>
@@ -41,7 +41,7 @@ text-align:center;
 <p>🌡 溫度：{{weather.temp}}°C</p>
 <p>🌧 降雨機率：{{weather.rain}}%</p>
 
-<h3>未來36小時預報</h3>
+<h3>未來24小時預報</h3>
 
 {% if forecast %}
 

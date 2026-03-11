@@ -76,7 +76,7 @@ def weather():
                 "rain": rain_data[0]["parameter"]["parameterName"]
             }
 
-            count = min(len(temp_data), len(rain_data), len(wx_data))
+            count = min(8, len(temp_data), len(rain_data), len(wx_data))
 
             for i in range(count):
 
