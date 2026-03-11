@@ -1,10 +1,6 @@
 from flask import Flask, render_template, request
 import requests
-import urllib3
 import os
-from taiwan_districts import districts, district_city_map
-
-urllib3.disable_warnings()
 
 app = Flask(__name__)
 
@@ -14,31 +10,13 @@ API_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 @app.route("/")
 def home():
 
-    return render_template(
-        "index.html",
-        districts=districts
-    )
+    return render_template("index.html")
 
 
 @app.route("/weather",methods=["POST"])
 def weather():
 
-    search=request.form.get("city","").strip()
-
-    if search in district_city_map:
-        city=district_city_map[search]
-    else:
-        city=search
-
-    city=city.replace("台","臺")
-
-    if not city.endswith("市") and not city.endswith("縣"):
-
-        if city in ["臺北","新北","桃園","臺中","臺南","高雄","基隆","新竹","嘉義"]:
-            city+="市"
-        else:
-            city+="縣"
-
+    city=request.form.get("city","臺北市")
 
     url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
@@ -47,13 +25,11 @@ def weather():
         "locationName":city
     }
 
-
     weather={
         "city":city,
-        "wx":"查詢不到資料",
+        "wx":"--",
         "temp":"--",
-        "rain":"--",
-        "icon":"🌤"
+        "rain":"--"
     }
 
     forecast=[]
@@ -62,11 +38,9 @@ def weather():
     humidity=[]
     times=[]
 
-
     try:
 
-        r=requests.get(url,params=params,verify=False,timeout=10)
-
+        r=requests.get(url,params=params,timeout=10)
         data=r.json()
 
         location=data["records"]["location"][0]
@@ -75,15 +49,12 @@ def weather():
         rain_data=location["weatherElement"][1]["time"]
         temp_data=location["weatherElement"][2]["time"]
 
-
         weather={
             "city":city,
             "wx":wx_data[0]["parameter"]["parameterName"],
             "temp":temp_data[0]["parameter"]["parameterName"],
-            "rain":rain_data[0]["parameter"]["parameterName"],
-            "icon":get_icon(wx_data[0]["parameter"]["parameterName"])
+            "rain":rain_data[0]["parameter"]["parameterName"]
         }
-
 
         for i in range(len(temp_data)):
 
@@ -91,13 +62,11 @@ def weather():
 
             temp=temp_data[i]["parameter"]["parameterName"]
             rain=rain_data[i]["parameter"]["parameterName"]
-            wx=wx_data[i]["parameter"]["parameterName"]
 
             forecast.append({
                 "time":time,
                 "temp":temp,
-                "rain":rain,
-                "wx":wx
+                "rain":rain
             })
 
             temps.append(int(temp))
@@ -105,11 +74,9 @@ def weather():
             humidity.append(60)
             times.append(time)
 
-
     except Exception as e:
 
-        print("Weather API error:",e)
-
+        print("API error:",e)
 
     return render_template(
         "result.html",
@@ -120,20 +87,6 @@ def weather():
         humidity=humidity,
         times=times
     )
-
-
-def get_icon(wx):
-
-    if "雨" in wx:
-        return "🌧"
-
-    if "雲" in wx:
-        return "☁"
-
-    if "晴" in wx:
-        return "☀"
-
-    return "🌤"
 
 
 if __name__=="__main__":

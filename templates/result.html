@@ -17,21 +17,15 @@
 
 <div class="container">
 
-<h2>📍 {{weather.city}}</h2>
+<h2>{{weather.city}}</h2>
 
-<div class="icon">
-
-{{weather.icon}}
-
-</div>
-
-<p>{{weather.wx}}</p>
+<p>☁ {{weather.wx}}</p>
 
 <p>🌡 {{weather.temp}}°C</p>
 
 <p>🌧 {{weather.rain}}%</p>
 
-<h3>📅 未來36小時預報</h3>
+<h3>📅 未來預報</h3>
 
 <div class="forecast">
 
@@ -40,8 +34,6 @@
 <div class="card">
 
 <div>{{f.time}}</div>
-
-<div>{{f.wx}}</div>
 
 <div>{{f.temp}}°C</div>
 
@@ -55,11 +47,9 @@
 
 <h3>📊 天氣圖表</h3>
 
-<button onclick="showTemp()">🌡 溫度</button>
-
-<button onclick="showRain()">🌧 降雨</button>
-
-<button onclick="showHum()">💧 濕度</button>
+<button onclick="showTemp()">溫度</button>
+<button onclick="showRain()">降雨</button>
+<button onclick="showHum()">濕度</button>
 
 <canvas id="chart"></canvas>
 
@@ -73,7 +63,42 @@
 
 </div>
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+
+const times={{times|tojson}}
+const temps={{temps|tojson}}
+const rains={{rains|tojson}}
+const hum={{humidity|tojson}}
+
+let chart
+
+function draw(data,label,color){
+
+const ctx=document.getElementById("chart")
+
+if(chart) chart.destroy()
+
+chart=new Chart(ctx,{
+type:'line',
+data:{
+labels:times,
+datasets:[{
+label:label,
+data:data,
+borderColor:color
+}]
+}
+})
+
+}
+
+function showTemp(){draw(temps,"溫度","#ff5733")}
+function showRain(){draw(rains,"降雨","#3498db")}
+function showHum(){draw(hum,"濕度","#2ecc71")}
+
+showTemp()
+
+</script>
 
 </body>
 </html>

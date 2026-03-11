@@ -17,13 +17,6 @@ text-align:center;
 color:white;
 }
 
-input{
-padding:12px;
-border:none;
-border-radius:10px;
-width:240px;
-}
-
 button{
 padding:10px 20px;
 border:none;
@@ -31,15 +24,6 @@ border-radius:10px;
 background:#ffcc00;
 cursor:pointer;
 margin:5px;
-}
-
-button:hover{
-background:#ffb700;
-}
-
-.icon{
-font-size:60px;
-margin:10px;
 }
 
 .forecast{
@@ -59,4 +43,12 @@ canvas{
 background:white;
 border-radius:10px;
 margin-top:20px;
+}
+
+@media (max-width:600px){
+
+.container{
+width:90%;
+}
+
 }
