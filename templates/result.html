@@ -58,7 +58,7 @@ margin-top:20px;
 <p>溫度：{{weather.temp}}°C</p>
 <p>降雨機率：{{weather.rain}}%</p>
 
-<h3>未來天氣</h3>
+<h3>未來天氣圖表</h3>
 
 <button onclick="showTemp()">🌡 溫度</button>
 <button onclick="showRain()">🌧 降雨</button>
@@ -103,17 +103,9 @@ borderWidth:3
 
 }
 
-function showTemp(){
-draw(temps,"溫度")
-}
-
-function showRain(){
-draw(rains,"降雨")
-}
-
-function showHum(){
-draw(hum,"濕度")
-}
+function showTemp(){draw(temps,"溫度")}
+function showRain(){draw(rains,"降雨")}
+function showHum(){draw(hum,"濕度")}
 
 showTemp()
 

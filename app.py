@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 app = Flask(__name__)
 
-API_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
+API_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
 
 @app.route("/")
@@ -15,67 +15,67 @@ def home():
     return render_template("index.html", districts=districts)
 
 
-@app.route("/weather", methods=["POST"])
+@app.route("/weather",methods=["POST"])
 def weather():
 
-    search = request.form.get("city", "").strip()
+    search=request.form.get("city","").strip()
 
     if search in district_city_map:
-        city = district_city_map[search]
+        city=district_city_map[search]
     else:
-        city = search
+        city=search
 
-    city = city.replace("台", "臺")
+    city=city.replace("台","臺")
 
     if not city.endswith("市") and not city.endswith("縣"):
 
-        if city in ["臺北", "新北", "桃園", "臺中", "臺南", "高雄", "基隆", "新竹", "嘉義"]:
-            city += "市"
+        if city in ["臺北","新北","桃園","臺中","臺南","高雄","基隆","新竹","嘉義"]:
+            city+="市"
         else:
-            city += "縣"
+            city+="縣"
 
-    url = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
-    params = {
-        "Authorization": API_KEY,
-        "locationName": city
+    params={
+        "Authorization":API_KEY,
+        "locationName":city
     }
 
-    forecast = []
-    temps = []
-    rains = []
-    humidity = []
-    times = []
+    forecast=[]
+    temps=[]
+    rains=[]
+    humidity=[]
+    times=[]
 
-    weather = None
+    weather=None
 
     try:
 
-        r = requests.get(url, params=params, timeout=10, verify=False)
-        data = r.json()
+        r=requests.get(url,params=params,timeout=10,verify=False)
+        data=r.json()
 
-        location = data["records"]["location"][0]
+        location=data["records"]["location"][0]
 
-        wx = location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
-        rain = location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
-        temp = location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
+        wx=location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
+        rain=location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
+        temp=location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
 
-        weather = {
-            "city": city,
-            "wx": wx,
-            "temp": temp,
-            "rain": rain
+        weather={
+            "city":city,
+            "wx":wx,
+            "temp":temp,
+            "rain":rain
         }
 
-        times_data = location["weatherElement"][2]["time"]
+        times_data=location["weatherElement"][2]["time"]
 
-        for i, t in enumerate(times_data):
+        for t in times_data:
 
-            temp = t["parameter"]["parameterName"]
+            temp=t["parameter"]["parameterName"]
 
             forecast.append({
-                "time": t["startTime"][5:16],
-                "temp": temp
+                "time":t["startTime"][5:16],
+                "temp":temp
             })
 
             temps.append(int(temp))
@@ -85,13 +85,13 @@ def weather():
 
     except Exception as e:
 
-        print("Weather API error:", e)
+        print("Weather API error:",e)
 
-        weather = {
-            "city": city,
-            "wx": "查詢不到資料",
-            "temp": "--",
-            "rain": "--"
+        weather={
+            "city":city,
+            "wx":"查詢不到資料",
+            "temp":"--",
+            "rain":"--"
         }
 
     return render_template(
@@ -105,5 +105,5 @@ def weather():
     )
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+if __name__=="__main__":
+    app.run(host="0.0.0.0",port=10000)
