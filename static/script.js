@@ -1,11 +1,13 @@
 function gps(){
 
 if(!navigator.geolocation){
-alert("你的瀏覽器不支援GPS")
+alert("瀏覽器不支援GPS")
 return
 }
 
-navigator.geolocation.getCurrentPosition(function(pos){
+navigator.geolocation.getCurrentPosition(
+
+function(pos){
 
 let lat=pos.coords.latitude
 let lon=pos.coords.longitude
@@ -41,6 +43,12 @@ document.querySelector("form").submit()
 alert("定位解析失敗")
 })
 
-})
+},
+
+function(){
+alert("GPS定位失敗")
+}
+
+)
 
 }

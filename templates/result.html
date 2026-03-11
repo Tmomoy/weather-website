@@ -17,23 +17,34 @@
 
 <div class="container">
 
-<h2>{{weather.city}}</h2>
+<h2>📍 {{weather.city}}</h2>
 
-<p>☁ 天氣：{{weather.wx}}</p>
+<h3>{{weather.wx}}</h3>
+
 <p>🌡 溫度：{{weather.temp}}°C</p>
 <p>🌧 降雨機率：{{weather.rain}}%</p>
 
-<h3>未來24小時預報</h3>
+<h3>📅 未來24小時預報</h3>
 
 <div>
 
 {% for f in forecast %}
-<p>{{f.time}} ｜ {{f.wx}} ｜ 🌡{{f.temp}}°C ｜ 🌧{{f.rain}}%</p>
+
+<p>
+🕒 {{f.time}}
+｜
+{{f.wx}}
+｜
+🌡 {{f.temp}}°C
+｜
+🌧 {{f.rain}}%
+</p>
+
 {% endfor %}
 
 </div>
 
-<h3>天氣圖表</h3>
+<h3>📊 天氣圖表</h3>
 
 <button onclick="showTemp()">🌡 溫度</button>
 <button onclick="showRain()">🌧 降雨</button>
@@ -59,7 +70,7 @@ let chart=null
 function draw(data,label,color){
 
 if(!data.length){
-alert("目前沒有圖表資料")
+alert("沒有圖表資料")
 return
 }
 
@@ -79,8 +90,8 @@ data:data,
 borderWidth:3,
 borderColor:color,
 backgroundColor:color,
-tension:0.3,
-pointRadius:5
+tension:0.4,
+pointRadius:6
 }]
 },
 options:{
