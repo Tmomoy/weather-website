@@ -102,7 +102,6 @@ margin-top:20px;
 <br>
 
 <button type="submit">查詢天氣</button>
-<button type="button" onclick="getLocation()">📍 GPS</button>
 
 </form>
 
@@ -112,7 +111,9 @@ margin-top:20px;
 <h2>{{weather.city}}</h2>
 
 <p>天氣：{{weather.wx}}</p>
+
 <p>溫度：{{weather.temp}}°C</p>
+
 <p>降雨機率：{{weather.rain}}%</p>
 
 {% endif %}
@@ -129,8 +130,11 @@ margin-top:20px;
 <div class="day">
 
 <p>{{f.time}}</p>
+
 <p>{{f.wx}}</p>
+
 <p>{{f.temp}}°C</p>
+
 <p>🌧 {{f.rain}}%</p>
 
 </div>
@@ -154,8 +158,8 @@ margin-top:20px;
 
 const cities = {{ districts | tojson | safe }}
 
-const input=document.getElementById("cityInput")
-const box=document.getElementById("autocomplete")
+const input = document.getElementById("cityInput")
+const box = document.getElementById("autocomplete")
 
 input.addEventListener("input",function(){
 
@@ -186,17 +190,6 @@ box.appendChild(div)
 })
 
 })
-
-
-function getLocation(){
-
-navigator.geolocation.getCurrentPosition(function(pos){
-
-alert("定位成功 (示範版)")
-
-})
-
-}
 
 
 {% if temps %}
