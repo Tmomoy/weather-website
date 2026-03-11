@@ -26,6 +26,11 @@ cursor:pointer;
 margin:5px;
 }
 
+.map button{
+display:block;
+margin:5px auto;
+}
+
 .forecast{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(80px,1fr));
@@ -45,8 +50,14 @@ border-radius:10px;
 margin-top:20px;
 }
 
+#radar{
+width:300px;
+}
+
 @media (max-width:600px){
+
 .container{
 width:90%;
 }
+
 }

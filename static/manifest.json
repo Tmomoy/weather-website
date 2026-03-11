@@ -1,10 +1,9 @@
 {
 "name":"Taiwan Weather",
 "short_name":"Weather",
-"start_url":"/",
 "display":"standalone",
+"start_url":"/",
 "background_color":"#4facfe",
-"description":"台灣天氣系統",
 "icons":[
 {
 "src":"https://cdn-icons-png.flaticon.com/512/869/869869.png",

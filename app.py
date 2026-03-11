@@ -4,11 +4,21 @@ import os
 
 app = Flask(__name__)
 
-CWA_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
+CWA_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
+
+# 22縣市
+CITIES = [
+"臺北市","新北市","桃園市","臺中市","臺南市","高雄市",
+"基隆市","新竹市","嘉義市",
+"新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣",
+"屏東縣","宜蘭縣","花蓮縣","臺東縣",
+"澎湖縣","金門縣","連江縣"
+]
+
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html",cities=CITIES)
 
 
 @app.route("/weather",methods=["POST"])
@@ -16,12 +26,10 @@ def weather():
 
     city=request.form.get("city","臺北市")
 
-    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+    city=city.replace("台","臺")
 
-    params={
-        "Authorization":CWA_KEY,
-        "locationName":city
-    }
+    if not city.endswith("市") and not city.endswith("縣"):
+        city+="市"
 
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
 
@@ -33,7 +41,15 @@ def weather():
 
     try:
 
+        url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+
+        params={
+            "Authorization":CWA_KEY,
+            "locationName":city
+        }
+
         r=requests.get(url,params=params,timeout=10)
+
         data=r.json()
 
         location=data["records"]["location"][0]
@@ -64,8 +80,8 @@ def weather():
             humidity.append(60)
             times.append(t)
 
-    except Exception as e:
-        print(e)
+    except:
+        pass
 
     return render_template(
         "result.html",

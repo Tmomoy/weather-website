@@ -1,10 +1,5 @@
 function gps(){
 
-if(!navigator.geolocation){
-alert("GPS 不支援")
-return
-}
-
 navigator.geolocation.getCurrentPosition(function(pos){
 
 let lat=pos.coords.latitude
@@ -31,6 +26,7 @@ document.querySelector("form").submit()
 
 }
 
+
 function mapCity(city){
 
 document.getElementById("cityInput").value=city
@@ -38,3 +34,17 @@ document.getElementById("cityInput").value=city
 document.querySelector("form").submit()
 
 }
+
+
+// 雷達動畫
+setInterval(function(){
+
+let radar=document.getElementById("radar")
+
+if(radar){
+
+radar.src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png?"+Date.now()
+
+}
+
+},120000)
