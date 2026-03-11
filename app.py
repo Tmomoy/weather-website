@@ -3,7 +3,6 @@ import requests
 import urllib3
 from taiwan_districts import districts, district_city_map
 
-# 關閉 SSL 警告（Render 需要）
 urllib3.disable_warnings()
 
 app = Flask(__name__)
@@ -35,7 +34,7 @@ def weather():
         else:
             city += "縣"
 
-    url = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
+    url = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
     params = {
         "Authorization": API_KEY,
@@ -55,48 +54,34 @@ def weather():
         r = requests.get(url, params=params, timeout=10, verify=False)
         data = r.json()
 
-        locations = data.get("records", {}).get("locations", [])
+        location = data["records"]["location"][0]
 
-        if not locations:
-            raise Exception("no data")
-
-        location = locations[0]["location"][0]
-
-        elements = location["weatherElement"]
-
-        temp_data = elements[3]["time"]
-        rain_data = elements[7]["time"]
-        hum_data = elements[1]["time"]
-        wx_data = elements[6]["time"]
+        wx = location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
+        rain = location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
+        temp = location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
 
         weather = {
             "city": city,
-            "wx": wx_data[0]["elementValue"][0]["value"],
-            "temp": temp_data[0]["elementValue"][0]["value"],
-            "rain": rain_data[0]["elementValue"][0]["value"]
+            "wx": wx,
+            "temp": temp,
+            "rain": rain
         }
 
-        days = min(7, len(temp_data))
+        times_data = location["weatherElement"][2]["time"]
 
-        for i in range(days):
+        for i, t in enumerate(times_data):
 
-            t = temp_data[i]["startTime"]
-
-            temp = temp_data[i]["elementValue"][0]["value"]
-            rain = rain_data[i]["elementValue"][0]["value"]
-            hum = hum_data[i]["elementValue"][0]["value"]
+            temp = t["parameter"]["parameterName"]
 
             forecast.append({
-                "time": t[5:10],
-                "temp": temp,
-                "rain": rain,
-                "hum": hum
+                "time": t["startTime"][5:16],
+                "temp": temp
             })
 
             temps.append(int(temp))
             rains.append(int(rain))
-            humidity.append(int(hum))
-            times.append(t[5:10])
+            humidity.append(60)
+            times.append(t["startTime"][11:16])
 
     except Exception as e:
 

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
 <meta charset="UTF-8">
 <title>台灣天氣系統</title>
 
@@ -18,44 +19,44 @@ margin:0;
 }
 
 .container{
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.35);
 padding:40px;
 border-radius:20px;
 text-align:center;
 color:white;
-width:420px;
 }
 
 input{
 padding:10px;
 border-radius:8px;
 border:none;
-width:240px;
+width:200px;
 }
 
 button{
 padding:10px 20px;
-background:#ffcc00;
+margin-top:10px;
 border:none;
 border-radius:8px;
+background:#ffcc00;
 cursor:pointer;
-margin-top:10px;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>🌤 台灣天氣系統</h1>
+<h1>台灣天氣系統</h1>
 
 <form action="/weather" method="post">
 
 <input name="city" placeholder="輸入城市或行政區">
 
-<br><br>
+<br>
 
 <button type="submit">查詢天氣</button>
 
@@ -64,4 +65,5 @@ margin-top:10px;
 </div>
 
 </body>
+
 </html>

@@ -4,34 +4,38 @@
 <head>
 
 <meta charset="UTF-8">
+<title>天氣結果</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
 font-family:Arial;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
 margin:0;
-padding:20px;
-color:white;
+background:linear-gradient(135deg,#4facfe,#00f2fe);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
 }
 
 .container{
 background:rgba(0,0,0,0.4);
-padding:30px;
+padding:40px;
 border-radius:20px;
-max-width:700px;
-margin:auto;
+width:500px;
+color:white;
 text-align:center;
 }
 
-.tabs{
-margin-top:20px;
-}
-
-.tabs button{
+button{
+padding:10px 20px;
 margin:5px;
-padding:8px 15px;
+border:none;
+border-radius:8px;
+background:#ffcc00;
+cursor:pointer;
 }
 
 canvas{
@@ -54,19 +58,13 @@ margin-top:20px;
 <p>溫度：{{weather.temp}}°C</p>
 <p>降雨機率：{{weather.rain}}%</p>
 
-<h3>未來7天</h3>
+<h3>未來天氣</h3>
 
-<div class="tabs">
+<button onclick="showTemp()">🌡 溫度</button>
+<button onclick="showRain()">🌧 降雨</button>
+<button onclick="showHum()">💧 濕度</button>
 
-<button onclick="showChart('temp')">🌡 溫度</button>
-<button onclick="showChart('rain')">🌧 降雨</button>
-<button onclick="showChart('hum')">💧 濕度</button>
-
-</div>
-
-<canvas id="tempChart"></canvas>
-<canvas id="rainChart" style="display:none"></canvas>
-<canvas id="humChart" style="display:none"></canvas>
+<canvas id="chart"></canvas>
 
 <br><br>
 
@@ -76,63 +74,51 @@ margin-top:20px;
 
 <script>
 
-function showChart(type){
+const times={{times|tojson}}
+const temps={{temps|tojson}}
+const rains={{rains|tojson}}
+const hum={{humidity|tojson}}
 
-document.getElementById("tempChart").style.display="none"
-document.getElementById("rainChart").style.display="none"
-document.getElementById("humChart").style.display="none"
+let chart
 
-if(type=="temp"){
-document.getElementById("tempChart").style.display="block"
+function draw(data,label){
+
+const ctx=document.getElementById("chart")
+
+if(chart){
+chart.destroy()
 }
 
-if(type=="rain"){
-document.getElementById("rainChart").style.display="block"
-}
-
-if(type=="hum"){
-document.getElementById("humChart").style.display="block"
-}
-
-}
-
-new Chart(document.getElementById("tempChart"),{
+chart=new Chart(ctx,{
 type:'line',
 data:{
-labels:{{times|tojson}},
+labels:times,
 datasets:[{
-label:'溫度',
-data:{{temps|tojson}},
+label:label,
+data:data,
 borderWidth:3
 }]
 }
 })
 
-new Chart(document.getElementById("rainChart"),{
-type:'line',
-data:{
-labels:{{times|tojson}},
-datasets:[{
-label:'降雨機率',
-data:{{rains|tojson}},
-borderWidth:3
-}]
 }
-})
 
-new Chart(document.getElementById("humChart"),{
-type:'line',
-data:{
-labels:{{times|tojson}},
-datasets:[{
-label:'濕度',
-data:{{humidity|tojson}},
-borderWidth:3
-}]
+function showTemp(){
+draw(temps,"溫度")
 }
-})
+
+function showRain(){
+draw(rains,"降雨")
+}
+
+function showHum(){
+draw(hum,"濕度")
+}
+
+showTemp()
 
 </script>
 
 </body>
+
 </html>
