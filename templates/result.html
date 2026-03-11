@@ -4,7 +4,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <title>天氣結果</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -20,9 +19,7 @@
 <h2>{{weather.city}}</h2>
 
 <p>☁ {{weather.wx}}</p>
-
 <p>🌡 {{weather.temp}}°C</p>
-
 <p>🌧 {{weather.rain}}%</p>
 
 <h3>📅 未來預報</h3>
@@ -34,9 +31,7 @@
 <div class="card">
 
 <div>{{f.time}}</div>
-
 <div>{{f.temp}}°C</div>
-
 <div>{{f.rain}}%</div>
 
 </div>
@@ -44,7 +39,6 @@
 {% endfor %}
 
 </div>
-
 
 <h3>📊 天氣圖表</h3>
 
@@ -56,11 +50,7 @@
 
 <br><br>
 
-<a href="/">
-
-<button>返回查詢</button>
-
-</a>
+<a href="/"><button>返回查詢</button></a>
 
 </div>
 

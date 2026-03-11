@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 <meta charset="UTF-8">
 <title>台灣天氣系統</title>
 
@@ -18,30 +17,38 @@
 
 <form action="/weather" method="post">
 
-<input id="cityInput" name="city" placeholder="輸入城市">
+<input id="cityInput" name="city" placeholder="輸入縣市">
 
-<button type="submit">查詢天氣</button>
-
+<button type="submit">查詢</button>
 <button type="button" onclick="gps()">📍 GPS</button>
 
 </form>
 
+<h3>🗺 點地圖查天氣</h3>
 
-<h3>🗺 台灣地圖查天氣</h3>
+<svg width="300" height="350">
 
-<img
-src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Taiwan_location_map.svg"
-width="300"
-onclick="mapWeather()"
->
+<rect x="100" y="50" width="80" height="40"
+onclick="mapCity('臺北市')" fill="#ccc"/>
+<text x="110" y="75">台北</text>
 
+<rect x="90" y="100" width="100" height="40"
+onclick="mapCity('臺中市')" fill="#ccc"/>
+<text x="105" y="125">台中</text>
 
-<h3>🌧 雷達降雨圖</h3>
+<rect x="90" y="160" width="100" height="40"
+onclick="mapCity('臺南市')" fill="#ccc"/>
+<text x="105" y="185">台南</text>
 
-<img
-src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png"
-width="300"
->
+<rect x="90" y="220" width="100" height="40"
+onclick="mapCity('高雄市')" fill="#ccc"/>
+<text x="105" y="245">高雄</text>
+
+</svg>
+
+<h3>🌧 雷達降雨</h3>
+
+<img src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png" width="300">
 
 </div>
 
