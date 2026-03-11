@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import requests
 import os
 import urllib3
+from datetime import datetime
 
 from taiwan_districts import districts, district_city_map
 
@@ -28,9 +29,10 @@ def home():
 @app.route("/weather", methods=["POST"])
 def weather():
 
+    today = datetime.now().strftime("%Y-%m-%d")
+
     search = request.form.get("city","").strip()
 
-    # 368行政區 → 縣市
     if search in district_city_map:
         city = district_city_map[search]
         district = search
@@ -48,7 +50,7 @@ def weather():
             city += "縣"
 
 
-    # 如果使用者只輸入縣市，自動找一個行政區
+    # 如果只輸入縣市 → 自動抓一個行政區
     if not district:
         for d,c in district_city_map.items():
             if c == city:
@@ -70,6 +72,7 @@ def weather():
         # -----------------------
         # 36小時預報
         # -----------------------
+
         url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
         params={
@@ -167,7 +170,8 @@ def weather():
         temps=temps,
         rains=rains,
         humidity=humidity,
-        times=times
+        times=times,
+        today=today
     )
 
 
