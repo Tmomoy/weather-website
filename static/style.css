@@ -17,13 +17,6 @@ text-align:center;
 color:white;
 }
 
-input{
-padding:12px;
-border:none;
-border-radius:10px;
-width:240px;
-}
-
 button{
 padding:10px 20px;
 border:none;
@@ -35,24 +28,6 @@ margin:5px;
 
 button:hover{
 background:#ffb700;
-}
-
-.autocomplete{
-background:white;
-color:black;
-border-radius:10px;
-max-height:200px;
-overflow:auto;
-margin-top:5px;
-}
-
-.autocomplete div{
-padding:8px;
-cursor:pointer;
-}
-
-.autocomplete div:hover{
-background:#eee;
 }
 
 canvas{
@@ -67,22 +42,4 @@ margin-top:20px;
 width:90%;
 }
 
-}
-
-
-/* 🔽 在這裡新增 */
-
-.forecast{
-display:flex;
-gap:10px;
-overflow-x:auto;
-margin-top:20px;
-}
-
-.card{
-background:rgba(255,255,255,0.2);
-padding:10px;
-border-radius:10px;
-min-width:120px;
-text-align:center;
 }

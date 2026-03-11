@@ -8,26 +8,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-<style>
-
-.forecast{
-display:flex;
-gap:10px;
-overflow-x:auto;
-margin-top:20px;
-}
-
-.card{
-background:rgba(255,255,255,0.2);
-padding:10px;
-border-radius:10px;
-min-width:120px;
-text-align:center;
-}
-
-</style>
 
 </head>
 
@@ -43,30 +25,13 @@ text-align:center;
 
 <h3>未來24小時預報</h3>
 
-{% if forecast %}
-
-<div class="forecast">
+<div>
 
 {% for f in forecast %}
-
-<div class="card">
-
-<p>{{f.time}}</p>
-<p>{{f.wx}}</p>
-<p>🌡 {{f.temp}}°C</p>
-<p>🌧 {{f.rain}}%</p>
-
-</div>
-
+<p>{{f.time}} ｜ {{f.wx}} ｜ 🌡{{f.temp}}°C ｜ 🌧{{f.rain}}%</p>
 {% endfor %}
 
 </div>
-
-{% else %}
-
-<p>暫無預報資料</p>
-
-{% endif %}
 
 <h3>天氣圖表</h3>
 
@@ -93,7 +58,7 @@ let chart=null
 
 function draw(data,label,color){
 
-if(!data || data.length===0){
+if(!data.length){
 alert("目前沒有圖表資料")
 return
 }
@@ -114,7 +79,8 @@ data:data,
 borderWidth:3,
 borderColor:color,
 backgroundColor:color,
-tension:0.3
+tension:0.3,
+pointRadius:5
 }]
 },
 options:{
@@ -122,13 +88,20 @@ responsive:true,
 plugins:{
 legend:{
 labels:{color:"white"}
+},
+datalabels:{
+color:"white",
+anchor:"end",
+align:"top",
+formatter:(value)=>value
 }
 },
 scales:{
 x:{ticks:{color:"white"}},
 y:{ticks:{color:"white"}}
 }
-}
+},
+plugins:[ChartDataLabels]
 })
 
 }
@@ -145,12 +118,9 @@ function showHum(){
 draw(hum,"濕度","#2ecc71")
 }
 
-if(temps.length>0){
 showTemp()
-}
 
 </script>
 
 </body>
-
 </html>

@@ -1,16 +1,14 @@
 function gps(){
 
 if(!navigator.geolocation){
-alert("你的瀏覽器不支援GPS定位")
+alert("你的瀏覽器不支援GPS")
 return
 }
 
-navigator.geolocation.getCurrentPosition(
+navigator.geolocation.getCurrentPosition(function(pos){
 
-function(pos){
-
-let lat = pos.coords.latitude
-let lon = pos.coords.longitude
+let lat=pos.coords.latitude
+let lon=pos.coords.longitude
 
 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
 
@@ -18,22 +16,22 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${
 
 .then(data=>{
 
-let address = data.address
+let address=data.address
 
-let city =
+let city=
 address.city ||
 address.town ||
 address.county ||
 address.state
 
 if(!city){
-alert("定位成功但找不到城市")
+alert("找不到城市")
 return
 }
 
-city = city.replace("台","臺")
+city=city.replace("台","臺")
 
-document.getElementById("cityInput").value = city
+document.getElementById("cityInput").value=city
 
 document.querySelector("form").submit()
 
@@ -43,14 +41,6 @@ document.querySelector("form").submit()
 alert("定位解析失敗")
 })
 
-},
-
-function(error){
-
-alert("GPS定位失敗，請允許定位權限")
-
-}
-
-)
+})
 
 }
