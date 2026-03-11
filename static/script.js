@@ -16,13 +16,12 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${
 
 .then(data=>{
 
-let city =
-data.address.city ||
+let city=data.address.city ||
 data.address.town ||
 data.address.county ||
 data.address.state
 
-document.getElementById("cityInput").value = city
+document.getElementById("cityInput").value=city
 
 document.querySelector("form").submit()
 
@@ -32,10 +31,9 @@ document.querySelector("form").submit()
 
 }
 
-
 function mapCity(city){
 
-document.getElementById("cityInput").value = city
+document.getElementById("cityInput").value=city
 
 document.querySelector("form").submit()
 
