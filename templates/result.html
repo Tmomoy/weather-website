@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 
 <head>
 
 <meta charset="UTF-8">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -22,31 +20,18 @@ color:white;
 background:rgba(0,0,0,0.4);
 padding:30px;
 border-radius:20px;
-max-width:600px;
+max-width:700px;
 margin:auto;
 text-align:center;
 }
 
-.forecast{
-display:flex;
-overflow-x:auto;
-gap:10px;
+.tabs{
 margin-top:20px;
 }
 
-.day{
-background:rgba(255,255,255,0.2);
-padding:10px;
-border-radius:10px;
-min-width:100px;
-}
-
-button{
-padding:10px 20px;
-background:#ffcc00;
-border:none;
-border-radius:8px;
-cursor:pointer;
+.tabs button{
+margin:5px;
+padding:8px 15px;
 }
 
 canvas{
@@ -71,26 +56,17 @@ margin-top:20px;
 
 <h3>未來7天</h3>
 
-<div class="forecast">
+<div class="tabs">
 
-{% for f in forecast %}
-
-<div class="day">
-
-<p>{{f.time}}</p>
-<p>🌡 {{f.temp}}°C</p>
-<p>🌧 {{f.rain}}%</p>
-<p>💧 {{f.hum}}%</p>
-
-</div>
-
-{% endfor %}
+<button onclick="showChart('temp')">🌡 溫度</button>
+<button onclick="showChart('rain')">🌧 降雨</button>
+<button onclick="showChart('hum')">💧 濕度</button>
 
 </div>
 
 <canvas id="tempChart"></canvas>
-<canvas id="rainChart"></canvas>
-<canvas id="humChart"></canvas>
+<canvas id="rainChart" style="display:none"></canvas>
+<canvas id="humChart" style="display:none"></canvas>
 
 <br><br>
 
@@ -99,6 +75,26 @@ margin-top:20px;
 </div>
 
 <script>
+
+function showChart(type){
+
+document.getElementById("tempChart").style.display="none"
+document.getElementById("rainChart").style.display="none"
+document.getElementById("humChart").style.display="none"
+
+if(type=="temp"){
+document.getElementById("tempChart").style.display="block"
+}
+
+if(type=="rain"){
+document.getElementById("rainChart").style.display="block"
+}
+
+if(type=="hum"){
+document.getElementById("humChart").style.display="block"
+}
+
+}
 
 new Chart(document.getElementById("tempChart"),{
 type:'line',
@@ -139,148 +135,4 @@ borderWidth:3
 </script>
 
 </body>
-
-=======
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<meta charset="UTF-8">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-
-body{
-font-family:Arial;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-margin:0;
-padding:20px;
-color:white;
-}
-
-.container{
-background:rgba(0,0,0,0.4);
-padding:30px;
-border-radius:20px;
-max-width:600px;
-margin:auto;
-text-align:center;
-}
-
-.forecast{
-display:flex;
-overflow-x:auto;
-gap:10px;
-margin-top:20px;
-}
-
-.day{
-background:rgba(255,255,255,0.2);
-padding:10px;
-border-radius:10px;
-min-width:100px;
-}
-
-button{
-padding:10px 20px;
-background:#ffcc00;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-canvas{
-background:white;
-border-radius:10px;
-margin-top:20px;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h2>{{weather.city}}</h2>
-
-<p>天氣：{{weather.wx}}</p>
-<p>溫度：{{weather.temp}}°C</p>
-<p>降雨機率：{{weather.rain}}%</p>
-
-<h3>未來7天</h3>
-
-<div class="forecast">
-
-{% for f in forecast %}
-
-<div class="day">
-
-<p>{{f.time}}</p>
-<p>🌡 {{f.temp}}°C</p>
-<p>🌧 {{f.rain}}%</p>
-<p>💧 {{f.hum}}%</p>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-<canvas id="tempChart"></canvas>
-<canvas id="rainChart"></canvas>
-<canvas id="humChart"></canvas>
-
-<br><br>
-
-<a href="/"><button>返回查詢</button></a>
-
-</div>
-
-<script>
-
-new Chart(document.getElementById("tempChart"),{
-type:'line',
-data:{
-labels:{{times|tojson}},
-datasets:[{
-label:'溫度',
-data:{{temps|tojson}},
-borderWidth:3
-}]
-}
-})
-
-new Chart(document.getElementById("rainChart"),{
-type:'line',
-data:{
-labels:{{times|tojson}},
-datasets:[{
-label:'降雨機率',
-data:{{rains|tojson}},
-borderWidth:3
-}]
-}
-})
-
-new Chart(document.getElementById("humChart"),{
-type:'line',
-data:{
-labels:{{times|tojson}},
-datasets:[{
-label:'濕度',
-data:{{humidity|tojson}},
-borderWidth:3
-}]
-}
-})
-
-</script>
-
-</body>
-
->>>>>>> 3fceca2df2e99afd3a908830108194cfdb4bd444
 </html>
