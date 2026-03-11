@@ -28,7 +28,6 @@ def home():
 @app.route("/weather", methods=["POST"])
 def weather():
 
-    # 使用者輸入
     search = request.form.get("city","").strip()
 
     # 368行政區 → 縣市
@@ -115,7 +114,6 @@ def weather():
         }
 
         r7=requests.get(url7,params=params7,verify=False,timeout=10)
-
         data7=r7.json()
 
         locations7=data7.get("records",{}).get("locations",[])
@@ -124,10 +122,20 @@ def weather():
 
             loc=locations7[0]["location"][0]
 
-            wx7=loc["weatherElement"][6]["time"]
-            temp7=loc["weatherElement"][12]["time"]
+            elements=loc["weatherElement"]
 
-            for i in range(7):
+            wx7=[]
+            temp7=[]
+
+            # 自動找到 Wx 和 T
+            for e in elements:
+                if e["elementName"]=="Wx":
+                    wx7=e["time"]
+
+                if e["elementName"]=="T":
+                    temp7=e["time"]
+
+            for i in range(min(7,len(wx7),len(temp7))):
 
                 day=wx7[i]["startTime"][5:10]
 
