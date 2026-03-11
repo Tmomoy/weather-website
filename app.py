@@ -104,13 +104,14 @@ def weather():
 
 
         # -----------------------
-        # 7天預報
+        # 7天預報 (修正版)
         # -----------------------
+
         url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
 
         params7={
             "Authorization":CWA_KEY,
-            "locationsName":city
+            "locationName":city
         }
 
         r7=requests.get(url7,params=params7,verify=False,timeout=10)
@@ -120,30 +121,34 @@ def weather():
 
         if locations7:
 
-            loc=locations7[0]["location"][0]
+            location_data=locations7[0].get("location",[])
 
-            elements=loc["weatherElement"]
+            if location_data:
 
-            wx7=[]
-            temp7=[]
+                loc=location_data[0]
 
-            # 自動找到 Wx 和 T
-            for e in elements:
-                if e["elementName"]=="Wx":
-                    wx7=e["time"]
+                elements=loc["weatherElement"]
 
-                if e["elementName"]=="T":
-                    temp7=e["time"]
+                wx7=[]
+                temp7=[]
 
-            for i in range(min(7,len(wx7),len(temp7))):
+                for e in elements:
 
-                day=wx7[i]["startTime"][5:10]
+                    if e["elementName"]=="Wx":
+                        wx7=e["time"]
 
-                forecast7.append({
-                    "day":day,
-                    "wx":wx7[i]["elementValue"][0]["value"],
-                    "temp":temp7[i]["elementValue"][0]["value"]
-                })
+                    if e["elementName"]=="T":
+                        temp7=e["time"]
+
+                for i in range(min(7,len(wx7),len(temp7))):
+
+                    day=wx7[i]["startTime"][5:10]
+
+                    forecast7.append({
+                        "day":day,
+                        "wx":wx7[i]["elementValue"][0]["value"],
+                        "temp":temp7[i]["elementValue"][0]["value"]
+                    })
 
     except Exception as e:
         print("Weather API error:",e)
