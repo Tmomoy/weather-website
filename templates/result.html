@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <title>天氣結果</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -18,10 +19,16 @@
 
 <h2>📍 {{weather.city}}</h2>
 
-<div class="icon">{{weather.icon}}</div>
+<div class="icon">
+
+{{weather.icon}}
+
+</div>
 
 <p>{{weather.wx}}</p>
+
 <p>🌡 {{weather.temp}}°C</p>
+
 <p>🌧 {{weather.rain}}%</p>
 
 <h3>📅 未來36小時預報</h3>
@@ -49,14 +56,20 @@
 <h3>📊 天氣圖表</h3>
 
 <button onclick="showTemp()">🌡 溫度</button>
+
 <button onclick="showRain()">🌧 降雨</button>
+
 <button onclick="showHum()">💧 濕度</button>
 
 <canvas id="chart"></canvas>
 
 <br><br>
 
-<a href="/"><button>返回查詢</button></a>
+<a href="/">
+
+<button>返回查詢</button>
+
+</a>
 
 </div>
 

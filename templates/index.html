@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <title>台灣天氣系統</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -18,24 +19,24 @@
 
 <form action="/weather" method="post">
 
-<input id="cityInput" name="city" placeholder="輸入城市或行政區" autocomplete="off">
+<input id="cityInput" name="city" placeholder="輸入城市或行政區">
 
 <div id="autocomplete" class="autocomplete"></div>
 
 <br>
 
 <button type="submit">查詢天氣</button>
+
 <button type="button" onclick="gps()">📍 GPS</button>
 
 </form>
 
-<div class="radar">
+<h3>🌧 雷達降雨圖</h3>
 
-<h3>🌧 即時雷達</h3>
-
-<img src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png" width="300">
-
-</div>
+<img
+src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png"
+width="300"
+>
 
 </div>
 
