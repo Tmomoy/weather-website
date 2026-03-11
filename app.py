@@ -106,7 +106,7 @@ def weather():
         # 7天預報
         # ========================
 
-        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-005"
+        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
 
         params7={
             "Authorization":CWA_KEY,
