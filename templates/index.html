@@ -19,25 +19,25 @@ height:100vh;
 }
 
 .container{
-background:rgba(0,0,0,0.35);
+background:rgba(0,0,0,0.4);
 padding:40px;
 border-radius:20px;
+width:420px;
 text-align:center;
 color:white;
-width:420px;
 }
 
 input{
-padding:10px;
+padding:12px;
 border:none;
-border-radius:8px;
-width:230px;
+border-radius:10px;
+width:240px;
 }
 
 button{
 padding:10px 20px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:#ffcc00;
 cursor:pointer;
 margin-top:10px;
@@ -46,14 +46,14 @@ margin-top:10px;
 .autocomplete{
 background:white;
 color:black;
-border-radius:8px;
+border-radius:10px;
 max-height:200px;
 overflow:auto;
 margin-top:5px;
 }
 
 .autocomplete div{
-padding:6px;
+padding:8px;
 cursor:pointer;
 }
 
@@ -97,7 +97,6 @@ const box=document.getElementById("autocomplete")
 input.addEventListener("input",function(){
 
 let val=this.value
-
 box.innerHTML=""
 
 if(!val) return
@@ -129,7 +128,7 @@ function gps(){
 
 navigator.geolocation.getCurrentPosition(function(){
 
-alert("GPS功能示範")
+alert("GPS定位示範")
 
 })
 
