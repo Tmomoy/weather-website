@@ -25,7 +25,6 @@ def weather():
 
     search=request.form.get("city","").strip()
 
-    # 行政區 → 縣市
     if search in district_city_map:
         city=district_city_map[search]
     else:
@@ -50,12 +49,7 @@ def weather():
     humidity=[]
     times=[]
 
-
     try:
-
-        # ========================
-        # 36小時預報
-        # ========================
 
         url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
@@ -67,72 +61,57 @@ def weather():
         r=requests.get(url,params=params,verify=False)
         data=r.json()
 
-        if "records" in data:
+        location=data["records"]["location"][0]
 
-            location=data["records"]["location"][0]
-
-            wx=location["weatherElement"][0]["time"]
-            rain=location["weatherElement"][1]["time"]
-            temp=location["weatherElement"][2]["time"]
-
-            weather={
-                "city":city,
-                "wx":wx[0]["parameter"]["parameterName"],
-                "temp":temp[0]["parameter"]["parameterName"],
-                "rain":rain[0]["parameter"]["parameterName"]
-            }
-
-            for i in range(len(temp)):
-
-                start=temp[i]["startTime"]
-
-                date=start[5:10]
-                time=start[11:16]
-
-                forecast.append({
-                    "date":date,
-                    "time":time,
-                    "temp":temp[i]["parameter"]["parameterName"],
-                    "rain":rain[i]["parameter"]["parameterName"]
-                })
-
-                temps.append(int(temp[i]["parameter"]["parameterName"]))
-                rains.append(int(rain[i]["parameter"]["parameterName"]))
-                humidity.append(60)
-                times.append(time)
+        wx=location["weatherElement"][0]["time"]
+        rain=location["weatherElement"][1]["time"]
+        temp=location["weatherElement"][2]["time"]
 
 
-        # ========================
-        # 7天預報
-        # ========================
-
-        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
-
-        params7={
-            "Authorization":CWA_KEY,
-            "locationName":city
+        weather={
+            "city":city,
+            "wx":wx[0]["parameter"]["parameterName"],
+            "temp":temp[0]["parameter"]["parameterName"],
+            "rain":rain[0]["parameter"]["parameterName"]
         }
 
-        r7=requests.get(url7,params=params7,verify=False)
-        data7=r7.json()
 
-        if "records" in data7:
+        for i in range(len(temp)):
 
-            location7=data7["records"]["location"][0]
+            start=temp[i]["startTime"]
 
-            wx7=location7["weatherElement"][0]["time"]
-            temp7=location7["weatherElement"][2]["time"]
+            date=start[5:10]
+            time=start[11:16]
 
-            for i in range(0,len(wx7),2):
+            forecast.append({
+                "date":date,
+                "time":time,
+                "temp":temp[i]["parameter"]["parameterName"],
+                "rain":rain[i]["parameter"]["parameterName"]
+            })
 
-                day=wx7[i]["startTime"][5:10]
+            temps.append(int(temp[i]["parameter"]["parameterName"]))
+            rains.append(int(rain[i]["parameter"]["parameterName"]))
+            humidity.append(60)
+            times.append(time)
+
+
+        # 生成7天預報
+        seen=set()
+
+        for t in temp:
+
+            day=t["startTime"][5:10]
+
+            if day not in seen:
 
                 forecast7.append({
                     "day":day,
-                    "wx":wx7[i]["parameter"]["parameterName"],
-                    "temp":temp7[i]["parameter"]["parameterName"]
+                    "wx":wx[0]["parameter"]["parameterName"],
+                    "temp":t["parameter"]["parameterName"]
                 })
 
+                seen.add(day)
 
     except Exception as e:
 
