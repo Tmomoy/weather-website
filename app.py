@@ -12,18 +12,10 @@ app = Flask(__name__)
 
 CWA_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
-CITIES = [
-"臺北市","新北市","桃園市","臺中市","臺南市","高雄市",
-"基隆市","新竹市","嘉義市",
-"新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣",
-"屏東縣","宜蘭縣","花蓮縣","臺東縣",
-"澎湖縣","金門縣","連江縣"
-]
-
 
 @app.route("/")
 def home():
-    return render_template("index.html", cities=CITIES)
+    return render_template("index.html")
 
 
 @app.route("/weather", methods=["POST"])
@@ -33,7 +25,7 @@ def weather():
 
     search = request.form.get("city","").strip()
 
-    # 行政區 → 縣市
+    # 368行政區轉縣市
     if search in district_city_map:
         city = district_city_map[search]
     else:
@@ -60,9 +52,9 @@ def weather():
 
     try:
 
-        # -----------------------
+        # -------------------
         # 36小時預報
-        # -----------------------
+        # -------------------
 
         url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
@@ -71,10 +63,10 @@ def weather():
             "locationName":city
         }
 
-        r=requests.get(url,params=params,verify=False,timeout=10)
+        r=requests.get(url,params=params,verify=False)
         data=r.json()
 
-        locations=data.get("records",{}).get("location",[])
+        locations=data["records"]["location"]
 
         if locations:
 
@@ -107,41 +99,52 @@ def weather():
                 times.append(t)
 
 
-        # -----------------------
-        # 7天預報 (縣市)
-        # -----------------------
+        # -------------------
+        # 7天預報
+        # -------------------
 
-        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-005"
+        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
 
         params7={
             "Authorization":CWA_KEY,
             "locationName":city
         }
 
-        r7=requests.get(url7,params=params7,verify=False,timeout=10)
+        r7=requests.get(url7,params=params7,verify=False)
         data7=r7.json()
 
-        locations7=data7.get("records",{}).get("location",[])
+        locations7=data7["records"]["locations"][0]["location"]
 
         if locations7:
 
-            location=locations7[0]
+            loc=locations7[0]
 
-            wx=location["weatherElement"][0]["time"]
-            temp=location["weatherElement"][2]["time"]
+            elements=loc["weatherElement"]
 
-            for i in range(len(wx)):
+            wx7=[]
+            temp7=[]
 
-                day=wx[i]["startTime"][5:10]
+            for e in elements:
+
+                if e["elementName"]=="Wx":
+                    wx7=e["time"]
+
+                if e["elementName"]=="T":
+                    temp7=e["time"]
+
+            for i in range(7):
+
+                day=wx7[i]["startTime"][5:10]
 
                 forecast7.append({
                     "day":day,
-                    "wx":wx[i]["parameter"]["parameterName"],
-                    "temp":temp[i]["parameter"]["parameterName"]
+                    "wx":wx7[i]["elementValue"][0]["value"],
+                    "temp":temp7[i]["elementValue"][0]["value"]
                 })
 
     except Exception as e:
         print("Weather API error:",e)
+
 
     return render_template(
         "result.html",
