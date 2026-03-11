@@ -10,6 +10,25 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+<style>
+
+.forecast{
+display:flex;
+gap:10px;
+overflow-x:auto;
+margin-top:20px;
+}
+
+.card{
+background:rgba(255,255,255,0.2);
+padding:10px;
+border-radius:10px;
+min-width:120px;
+text-align:center;
+}
+
+</style>
+
 </head>
 
 <body>
@@ -21,6 +40,33 @@
 <p>☁ 天氣：{{weather.wx}}</p>
 <p>🌡 溫度：{{weather.temp}}°C</p>
 <p>🌧 降雨機率：{{weather.rain}}%</p>
+
+<h3>未來36小時預報</h3>
+
+{% if forecast %}
+
+<div class="forecast">
+
+{% for f in forecast %}
+
+<div class="card">
+
+<p>{{f.time}}</p>
+<p>{{f.wx}}</p>
+<p>🌡 {{f.temp}}°C</p>
+<p>🌧 {{f.rain}}%</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<p>暫無預報資料</p>
+
+{% endif %}
 
 <h3>天氣圖表</h3>
 
@@ -46,6 +92,11 @@ const hum={{humidity|tojson}}
 let chart=null
 
 function draw(data,label,color){
+
+if(!data || data.length===0){
+alert("目前沒有圖表資料")
+return
+}
 
 const ctx=document.getElementById("chart")
 
@@ -94,7 +145,9 @@ function showHum(){
 draw(hum,"濕度","#2ecc71")
 }
 
+if(temps.length>0){
 showTemp()
+}
 
 </script>
 

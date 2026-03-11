@@ -46,6 +46,7 @@ def weather():
     rains=[]
     humidity=[]
     times=[]
+    forecast=[]
 
     weather={
         "city":city,
@@ -57,7 +58,6 @@ def weather():
     try:
 
         r=requests.get(url,params=params,verify=False,timeout=10)
-
         data=r.json()
 
         locations=data.get("records",{}).get("location",[])
@@ -66,27 +66,36 @@ def weather():
 
             location=locations[0]
 
-            wx=location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
-            rain=location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
-            temp=location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
+            wx_data=location["weatherElement"][0]["time"]
+            rain_data=location["weatherElement"][1]["time"]
+            temp_data=location["weatherElement"][2]["time"]
 
             weather={
                 "city":city,
-                "wx":wx,
-                "temp":temp,
-                "rain":rain
+                "wx":wx_data[0]["parameter"]["parameterName"],
+                "temp":temp_data[0]["parameter"]["parameterName"],
+                "rain":rain_data[0]["parameter"]["parameterName"]
             }
 
-            times_data=location["weatherElement"][2]["time"]
+            for i in range(len(temp_data)):
 
-            for t in times_data:
+                t=temp_data[i]["startTime"]
 
-                temp=int(t["parameter"]["parameterName"])
+                temp=temp_data[i]["parameter"]["parameterName"]
+                rain=rain_data[i]["parameter"]["parameterName"]
+                wx=wx_data[i]["parameter"]["parameterName"]
 
-                temps.append(temp)
+                forecast.append({
+                    "time":t[5:16],
+                    "temp":temp,
+                    "rain":rain,
+                    "wx":wx
+                })
+
+                temps.append(int(temp))
                 rains.append(int(rain))
                 humidity.append(60)
-                times.append(t["startTime"][11:16])
+                times.append(t[11:16])
 
     except Exception as e:
 
@@ -95,6 +104,7 @@ def weather():
     return render_template(
         "result.html",
         weather=weather,
+        forecast=forecast,
         temps=temps,
         rains=rains,
         humidity=humidity,

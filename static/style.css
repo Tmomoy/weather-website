@@ -68,3 +68,21 @@ width:90%;
 }
 
 }
+
+
+/* 🔽 在這裡新增 */
+
+.forecast{
+display:flex;
+gap:10px;
+overflow-x:auto;
+margin-top:20px;
+}
+
+.card{
+background:rgba(255,255,255,0.2);
+padding:10px;
+border-radius:10px;
+min-width:120px;
+text-align:center;
+}
