@@ -33,12 +33,11 @@ def weather():
 
     search = request.form.get("city","").strip()
 
+    # 行政區 → 縣市
     if search in district_city_map:
         city = district_city_map[search]
-        district = search
     else:
         city = search
-        district = None
 
     city = city.replace("台","臺")
 
@@ -48,14 +47,6 @@ def weather():
             city += "市"
         else:
             city += "縣"
-
-
-    # 如果只輸入縣市 → 自動抓一個行政區
-    if not district:
-        for d,c in district_city_map.items():
-            if c == city:
-                district = d
-                break
 
 
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
@@ -117,46 +108,36 @@ def weather():
 
 
         # -----------------------
-        # 7天預報
+        # 7天預報 (縣市)
         # -----------------------
 
-        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
+        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-005"
 
         params7={
             "Authorization":CWA_KEY,
-            "locationName":district
+            "locationName":city
         }
 
         r7=requests.get(url7,params=params7,verify=False,timeout=10)
         data7=r7.json()
 
-        locations7=data7.get("records",{}).get("locations",[])
+        locations7=data7.get("records",{}).get("location",[])
 
         if locations7:
 
-            loc=locations7[0]["location"][0]
+            location=locations7[0]
 
-            elements=loc["weatherElement"]
+            wx=location["weatherElement"][0]["time"]
+            temp=location["weatherElement"][2]["time"]
 
-            wx7=[]
-            temp7=[]
+            for i in range(len(wx)):
 
-            for e in elements:
-
-                if e["elementName"]=="Wx":
-                    wx7=e["time"]
-
-                if e["elementName"]=="T":
-                    temp7=e["time"]
-
-            for i in range(min(7,len(wx7),len(temp7))):
-
-                day=wx7[i]["startTime"][5:10]
+                day=wx[i]["startTime"][5:10]
 
                 forecast7.append({
                     "day":day,
-                    "wx":wx7[i]["elementValue"][0]["value"],
-                    "temp":temp7[i]["elementValue"][0]["value"]
+                    "wx":wx[i]["parameter"]["parameterName"],
+                    "temp":temp[i]["parameter"]["parameterName"]
                 })
 
     except Exception as e:
