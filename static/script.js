@@ -5,9 +5,7 @@ alert("瀏覽器不支援GPS")
 return
 }
 
-navigator.geolocation.getCurrentPosition(
-
-function(pos){
+navigator.geolocation.getCurrentPosition(function(pos){
 
 let lat=pos.coords.latitude
 let lon=pos.coords.longitude
@@ -18,18 +16,11 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${
 
 .then(data=>{
 
-let address=data.address
-
 let city=
-address.city ||
-address.town ||
-address.county ||
-address.state
-
-if(!city){
-alert("找不到城市")
-return
-}
+data.address.city ||
+data.address.town ||
+data.address.county ||
+data.address.state
 
 city=city.replace("台","臺")
 
@@ -39,16 +30,21 @@ document.querySelector("form").submit()
 
 })
 
-.catch(()=>{
-alert("定位解析失敗")
 })
 
-},
-
-function(){
-alert("GPS定位失敗")
 }
 
-)
+
+function mapWeather(){
+
+let city=prompt("請輸入城市名稱")
+
+if(city){
+
+document.getElementById("cityInput").value=city
+
+document.querySelector("form").submit()
+
+}
 
 }

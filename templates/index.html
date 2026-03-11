@@ -26,9 +26,19 @@
 
 <button type="submit">查詢天氣</button>
 
-<button type="button" onclick="gps()">📍 GPS</button>
+<button type="button" onclick="gps()">📍 GPS定位</button>
 
 </form>
+
+<br>
+
+<h3>🗺 台灣地圖查天氣</h3>
+
+<img 
+src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Taiwan_location_map.svg"
+style="width:300px;cursor:pointer"
+onclick="mapWeather()"
+>
 
 </div>
 
@@ -42,6 +52,7 @@ const box=document.getElementById("autocomplete")
 input.addEventListener("input",function(){
 
 let val=this.value.trim()
+
 box.innerHTML=""
 
 if(!val) return
