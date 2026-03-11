@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 </head>
 
@@ -39,6 +40,8 @@
 {% endfor %}
 
 </div>
+
+
 <h3>📅 未來7天</h3>
 
 <div class="forecast">
@@ -48,6 +51,15 @@
 <div class="card">
 
 <div>{{f.day}}</div>
+
+{% if "雨" in f.wx %}
+<img src="https://cdn-icons-png.flaticon.com/512/3351/3351979.png" width="40">
+{% elif "雲" in f.wx %}
+<img src="https://cdn-icons-png.flaticon.com/512/414/414825.png" width="40">
+{% else %}
+<img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" width="40">
+{% endif %}
+
 <div>{{f.wx}}</div>
 <div>{{f.temp}}°C</div>
 
@@ -56,6 +68,7 @@
 {% endfor %}
 
 </div>
+
 
 <h3>📊 天氣圖</h3>
 
@@ -88,14 +101,32 @@ if(chart) chart.destroy()
 
 chart=new Chart(ctx,{
 type:'line',
+
 data:{
 labels:times,
 datasets:[{
 label:label,
 data:data,
-borderColor:color
+borderColor:color,
+backgroundColor:color,
+tension:0.3
 }]
+},
+
+plugins:[ChartDataLabels],
+
+options:{
+plugins:{
+datalabels:{
+color:"white",
+align:"top",
+font:{
+weight:"bold"
 }
+}
+}
+}
+
 })
 
 }
