@@ -35,8 +35,8 @@ def weather():
 
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
 
-    forecast=[]
-    forecast7=[]
+    forecast=[]      # 36小時
+    forecast7=[]     # 7天
     temps=[]
     rains=[]
     humidity=[]
@@ -113,13 +113,14 @@ def weather():
             })
 
     except Exception as e:
-        print(e)
+        print("Weather API error:",e)
+
 
     return render_template(
         "result.html",
         weather=weather,
-        forecast=forecast,
-        forecast7=forecast7,
+        forecast=forecast,      # 36小時
+        forecast7=forecast7,    # 7天
         temps=temps,
         rains=rains,
         humidity=humidity,
