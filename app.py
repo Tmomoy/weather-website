@@ -33,8 +33,10 @@ def weather():
     # 368行政區 → 縣市
     if search in district_city_map:
         city = district_city_map[search]
+        district = search
     else:
         city = search
+        district = None
 
     city = city.replace("台","臺")
 
@@ -44,6 +46,14 @@ def weather():
             city += "市"
         else:
             city += "縣"
+
+
+    # 如果使用者只輸入縣市，自動找一個行政區
+    if not district:
+        for d,c in district_city_map.items():
+            if c == city:
+                district = d
+                break
 
 
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
@@ -104,14 +114,14 @@ def weather():
 
 
         # -----------------------
-        # 7天預報 (修正版)
+        # 7天預報
         # -----------------------
 
         url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
 
         params7={
             "Authorization":CWA_KEY,
-            "locationName":city
+            "locationName":district
         }
 
         r7=requests.get(url7,params=params7,verify=False,timeout=10)
@@ -121,34 +131,30 @@ def weather():
 
         if locations7:
 
-            location_data=locations7[0].get("location",[])
+            loc=locations7[0]["location"][0]
 
-            if location_data:
+            elements=loc["weatherElement"]
 
-                loc=location_data[0]
+            wx7=[]
+            temp7=[]
 
-                elements=loc["weatherElement"]
+            for e in elements:
 
-                wx7=[]
-                temp7=[]
+                if e["elementName"]=="Wx":
+                    wx7=e["time"]
 
-                for e in elements:
+                if e["elementName"]=="T":
+                    temp7=e["time"]
 
-                    if e["elementName"]=="Wx":
-                        wx7=e["time"]
+            for i in range(min(7,len(wx7),len(temp7))):
 
-                    if e["elementName"]=="T":
-                        temp7=e["time"]
+                day=wx7[i]["startTime"][5:10]
 
-                for i in range(min(7,len(wx7),len(temp7))):
-
-                    day=wx7[i]["startTime"][5:10]
-
-                    forecast7.append({
-                        "day":day,
-                        "wx":wx7[i]["elementValue"][0]["value"],
-                        "temp":temp7[i]["elementValue"][0]["value"]
-                    })
+                forecast7.append({
+                    "day":day,
+                    "wx":wx7[i]["elementValue"][0]["value"],
+                    "temp":temp7[i]["elementValue"][0]["value"]
+                })
 
     except Exception as e:
         print("Weather API error:",e)
