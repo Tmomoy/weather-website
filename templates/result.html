@@ -8,43 +8,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-}
-
-.container{
-background:rgba(0,0,0,0.4);
-padding:40px;
-border-radius:20px;
-width:520px;
-text-align:center;
-color:white;
-}
-
-button{
-padding:10px 20px;
-border:none;
-border-radius:10px;
-background:#ffcc00;
-cursor:pointer;
-margin:5px;
-}
-
-canvas{
-background:white;
-border-radius:10px;
-margin-top:20px;
-}
-
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
@@ -79,9 +43,9 @@ const temps={{temps|tojson}}
 const rains={{rains|tojson}}
 const hum={{humidity|tojson}}
 
-let chart
+let chart=null
 
-function draw(data,label){
+function draw(data,label,color){
 
 const ctx=document.getElementById("chart")
 
@@ -96,16 +60,39 @@ labels:times,
 datasets:[{
 label:label,
 data:data,
-borderWidth:3
+borderWidth:3,
+borderColor:color,
+backgroundColor:color,
+tension:0.3
 }]
+},
+options:{
+responsive:true,
+plugins:{
+legend:{
+labels:{color:"white"}
+}
+},
+scales:{
+x:{ticks:{color:"white"}},
+y:{ticks:{color:"white"}}
+}
 }
 })
 
 }
 
-function showTemp(){draw(temps,"溫度")}
-function showRain(){draw(rains,"降雨")}
-function showHum(){draw(hum,"濕度")}
+function showTemp(){
+draw(temps,"溫度","#ff5733")
+}
+
+function showRain(){
+draw(rains,"降雨","#3498db")
+}
+
+function showHum(){
+draw(hum,"濕度","#2ecc71")
+}
 
 showTemp()
 

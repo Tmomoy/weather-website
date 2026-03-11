@@ -6,62 +6,7 @@
 <meta charset="UTF-8">
 <title>台灣天氣系統</title>
 
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-background:linear-gradient(135deg,#4facfe,#00f2fe);
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
-
-.container{
-background:rgba(0,0,0,0.4);
-padding:40px;
-border-radius:20px;
-width:420px;
-text-align:center;
-color:white;
-}
-
-input{
-padding:12px;
-border:none;
-border-radius:10px;
-width:240px;
-}
-
-button{
-padding:10px 20px;
-border:none;
-border-radius:10px;
-background:#ffcc00;
-cursor:pointer;
-margin-top:10px;
-}
-
-.autocomplete{
-background:white;
-color:black;
-border-radius:10px;
-max-height:200px;
-overflow:auto;
-margin-top:5px;
-}
-
-.autocomplete div{
-padding:8px;
-cursor:pointer;
-}
-
-.autocomplete div:hover{
-background:#eee;
-}
-
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
@@ -73,7 +18,7 @@ background:#eee;
 
 <form action="/weather" method="post">
 
-<input id="cityInput" name="city" placeholder="輸入城市或行政區">
+<input id="cityInput" name="city" placeholder="輸入城市或行政區" autocomplete="off">
 
 <div id="autocomplete" class="autocomplete"></div>
 
@@ -96,7 +41,7 @@ const box=document.getElementById("autocomplete")
 
 input.addEventListener("input",function(){
 
-let val=this.value
+let val=this.value.trim()
 box.innerHTML=""
 
 if(!val) return
@@ -124,18 +69,9 @@ box.appendChild(div)
 
 })
 
-function gps(){
-
-navigator.geolocation.getCurrentPosition(function(){
-
-alert("GPS定位示範")
-
-})
-
-}
-
 </script>
 
-</body>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
+</body>
 </html>

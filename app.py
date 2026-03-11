@@ -34,7 +34,7 @@ def weather():
         else:
             city+="縣"
 
-    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+    url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
 
     params={
         "Authorization":API_KEY,
@@ -44,6 +44,7 @@ def weather():
     temps=[]
     rains=[]
     humidity=[]
+    wind=[]
     times=[]
 
     weather=None
@@ -51,33 +52,47 @@ def weather():
     try:
 
         r=requests.get(url,params=params,verify=False)
+
         data=r.json()
 
-        location=data["records"]["location"][0]
+        location=data["records"]["locations"][0]["location"][0]
 
-        wx=location["weatherElement"][0]["time"][0]["parameter"]["parameterName"]
-        rain=location["weatherElement"][1]["time"][0]["parameter"]["parameterName"]
-        temp=location["weatherElement"][2]["time"][0]["parameter"]["parameterName"]
+        elements=location["weatherElement"]
+
+        temp_data=elements[3]["time"]
+        rain_data=elements[7]["time"]
+        hum_data=elements[1]["time"]
+        wind_data=elements[4]["time"]
+        wx_data=elements[6]["time"]
 
         weather={
             "city":city,
-            "wx":wx,
-            "temp":temp,
-            "rain":rain
+            "wx":wx_data[0]["elementValue"][0]["value"],
+            "temp":temp_data[0]["elementValue"][0]["value"],
+            "rain":rain_data[0]["elementValue"][0]["value"]
         }
 
-        time_data=location["weatherElement"][2]["time"]
+        days=min(7,len(temp_data))
 
-        for t in time_data:
+        for i in range(days):
 
-            temp=int(t["parameter"]["parameterName"])
+            t=temp_data[i]["startTime"]
 
-            temps.append(temp)
+            temp=temp_data[i]["elementValue"][0]["value"]
+            rain=rain_data[i]["elementValue"][0]["value"]
+            hum=hum_data[i]["elementValue"][0]["value"]
+            w=wind_data[i]["elementValue"][0]["value"]
+
+            temps.append(int(temp))
             rains.append(int(rain))
-            humidity.append(60)
-            times.append(t["startTime"][5:16])
+            humidity.append(int(hum))
+            wind.append(int(w))
 
-    except:
+            times.append(t[5:10])
+
+    except Exception as e:
+
+        print("API error:",e)
 
         weather={
             "city":city,
@@ -92,6 +107,7 @@ def weather():
         temps=temps,
         rains=rains,
         humidity=humidity,
+        wind=wind,
         times=times
     )
 
