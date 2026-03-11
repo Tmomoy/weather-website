@@ -4,83 +4,42 @@
 <head>
 
 <meta charset="UTF-8">
-<title>台灣天氣系統 V4</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>台灣天氣系統 </title>
 
 <style>
 
 body{
 font-family:Arial;
-margin:0;
 background:linear-gradient(135deg,#4facfe,#00f2fe);
-color:white;
 display:flex;
 justify-content:center;
 align-items:center;
-min-height:100vh;
+height:100vh;
+margin:0;
 }
 
 .container{
-background:rgba(0,0,0,0.35);
+background:rgba(0,0,0,0.4);
 padding:40px;
 border-radius:20px;
-width:420px;
 text-align:center;
+color:white;
+width:400px;
 }
 
 input{
 padding:10px;
-border:none;
 border-radius:8px;
-width:220px;
+border:none;
+width:200px;
 }
 
 button{
 padding:10px 20px;
+background:#ffcc00;
 border:none;
 border-radius:8px;
-background:#ffcc00;
 cursor:pointer;
-margin-top:10px;
-}
-
-.autocomplete{
-background:white;
-color:black;
-border-radius:8px;
-margin-top:5px;
-max-height:200px;
-overflow:auto;
-}
-
-.autocomplete div{
-padding:6px;
-cursor:pointer;
-}
-
-.autocomplete div:hover{
-background:#eee;
-}
-
-.forecast{
-display:flex;
-gap:10px;
-overflow-x:auto;
-margin-top:20px;
-}
-
-.day{
-background:rgba(255,255,255,0.2);
-padding:10px;
-border-radius:10px;
-min-width:120px;
-}
-
-canvas{
-background:white;
-border-radius:10px;
-margin-top:20px;
 }
 
 </style>
@@ -93,136 +52,17 @@ margin-top:20px;
 
 <h1>🌤 台灣天氣系統</h1>
 
-<form method="post">
+<form action="/weather" method="post">
 
-<input id="cityInput" name="city" placeholder="輸入城市或行政區">
+<input name="city" placeholder="輸入城市或行政區">
 
-<div id="autocomplete" class="autocomplete"></div>
-
-<br>
+<br><br>
 
 <button type="submit">查詢天氣</button>
 
 </form>
 
-
-{% if weather %}
-
-<h2>{{weather.city}}</h2>
-
-<p>天氣：{{weather.wx}}</p>
-
-<p>溫度：{{weather.temp}}°C</p>
-
-<p>降雨機率：{{weather.rain}}%</p>
-
-{% endif %}
-
-
-{% if forecast %}
-
-<h3>未來36小時</h3>
-
-<div class="forecast">
-
-{% for f in forecast %}
-
-<div class="day">
-
-<p>{{f.time}}</p>
-
-<p>{{f.wx}}</p>
-
-<p>{{f.temp}}°C</p>
-
-<p>🌧 {{f.rain}}%</p>
-
 </div>
-
-{% endfor %}
-
-</div>
-
-{% endif %}
-
-
-{% if temps %}
-
-<canvas id="tempChart"></canvas>
-
-{% endif %}
-
-</div>
-
-<script>
-
-const cities = {{ districts | tojson | safe }}
-
-const input = document.getElementById("cityInput")
-const box = document.getElementById("autocomplete")
-
-input.addEventListener("input",function(){
-
-let val=this.value
-box.innerHTML=""
-
-if(!val) return
-
-cities.forEach(city=>{
-
-if(city.includes(val)){
-
-let div=document.createElement("div")
-
-div.textContent=city
-
-div.onclick=function(){
-
-input.value=city
-box.innerHTML=""
-
-}
-
-box.appendChild(div)
-
-}
-
-})
-
-})
-
-
-{% if temps %}
-
-const ctx=document.getElementById("tempChart")
-
-new Chart(ctx,{
-type:'line',
-data:{
-labels:{{times | tojson}},
-datasets:[{
-label:'溫度',
-data:{{temps | tojson}},
-borderWidth:3,
-tension:0.3
-}]
-}
-})
-
-{% endif %}
-
-
-// 夜間模式
-
-let hour=new Date().getHours()
-
-if(hour>=18||hour<=6){
-
-document.body.style.background="linear-gradient(135deg,#141E30,#243B55)"
-
-}
-
-</script>
 
 </body>
 
