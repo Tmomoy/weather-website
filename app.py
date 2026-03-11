@@ -16,7 +16,7 @@ def home():
     return render_template("index.html", districts=districts)
 
 
-@app.route("/weather",methods=["POST"])
+@app.route("/weather", methods=["POST"])
 def weather():
 
     search=request.form.get("city","").strip()
@@ -35,14 +35,12 @@ def weather():
         else:
             city+="縣"
 
-
     url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
     params={
         "Authorization":API_KEY,
         "locationName":city
     }
-
 
     weather={
         "city":city,
@@ -57,11 +55,9 @@ def weather():
     times=[]
     forecast=[]
 
-
     try:
 
         r=requests.get(url,params=params,verify=False,timeout=10)
-
         data=r.json()
 
         locations=data["records"]["location"]
@@ -74,14 +70,12 @@ def weather():
             rain_data=location["weatherElement"][1]["time"]
             temp_data=location["weatherElement"][2]["time"]
 
-
             weather={
                 "city":city,
                 "wx":wx_data[0]["parameter"]["parameterName"],
                 "temp":temp_data[0]["parameter"]["parameterName"],
                 "rain":rain_data[0]["parameter"]["parameterName"]
             }
-
 
             for i in range(len(temp_data)):
 
@@ -104,9 +98,7 @@ def weather():
                 times.append(time)
 
     except Exception as e:
-
         print("Weather API error:",e)
-
 
     return render_template(
         "result.html",

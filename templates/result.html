@@ -6,10 +6,9 @@
 <meta charset="UTF-8">
 <title>天氣結果</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -19,32 +18,9 @@
 
 <h2>📍 {{weather.city}}</h2>
 
-<img src="https://openweathermap.org/img/wn/10d@2x.png">
-
-<h3>{{weather.wx}}</h3>
-
-<p>🌡 溫度 {{weather.temp}}°C</p>
-<p>🌧 降雨機率 {{weather.rain}}%</p>
-
-<h3>📅 未來24小時預報</h3>
-
-<div>
-
-{% for f in forecast %}
-
-<p>
-🕒 {{f.time}}
-｜
-{{f.wx}}
-｜
-🌡 {{f.temp}}°C
-｜
-🌧 {{f.rain}}%
-</p>
-
-{% endfor %}
-
-</div>
+<p>☁ {{weather.wx}}</p>
+<p>🌡 {{weather.temp}}°C</p>
+<p>🌧 {{weather.rain}}%</p>
 
 <h3>📊 天氣圖表</h3>
 
@@ -71,11 +47,6 @@ let chart=null
 
 function draw(data,label,color){
 
-if(!data.length){
-alert("沒有圖表資料")
-return
-}
-
 const ctx=document.getElementById("chart")
 
 if(chart){
@@ -92,44 +63,16 @@ data:data,
 borderWidth:3,
 borderColor:color,
 backgroundColor:color,
-tension:0.4,
-pointRadius:6
+tension:0.3
 }]
-},
-options:{
-responsive:true,
-plugins:{
-legend:{
-labels:{color:"white"}
-},
-datalabels:{
-color:"white",
-anchor:"end",
-align:"top",
-formatter:(value)=>value
 }
-},
-scales:{
-x:{ticks:{color:"white"}},
-y:{ticks:{color:"white"}}
-}
-},
-plugins:[ChartDataLabels]
 })
 
 }
 
-function showTemp(){
-draw(temps,"溫度","#ff5733")
-}
-
-function showRain(){
-draw(rains,"降雨","#3498db")
-}
-
-function showHum(){
-draw(hum,"濕度","#2ecc71")
-}
+function showTemp(){draw(temps,"溫度","#ff5733")}
+function showRain(){draw(rains,"降雨","#3498db")}
+function showHum(){draw(hum,"濕度","#2ecc71")}
 
 showTemp()
 

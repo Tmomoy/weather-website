@@ -17,6 +17,13 @@ text-align:center;
 color:white;
 }
 
+input{
+padding:12px;
+border:none;
+border-radius:10px;
+width:240px;
+}
+
 button{
 padding:10px 20px;
 border:none;
@@ -30,21 +37,34 @@ button:hover{
 background:#ffb700;
 }
 
+.autocomplete{
+background:white;
+color:black;
+border-radius:10px;
+max-height:200px;
+overflow:auto;
+margin-top:5px;
+}
+
+.autocomplete div{
+padding:8px;
+cursor:pointer;
+}
+
+.autocomplete div:hover{
+background:#eee;
+}
+
 canvas{
 background:white;
 border-radius:10px;
 margin-top:20px;
 }
 
-img{
-width:100px;
-}
-
 @media (max-width:600px){
 
 .container{
 width:90%;
-padding:20px;
 }
 
 }
