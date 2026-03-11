@@ -24,12 +24,24 @@ def weather():
 
     city=city.replace("台","臺")
 
-    if not city.endswith("市") and not city.endswith("縣"):
+    # 城市格式修正
+    city_map={
+    "臺北":"臺北市",
+    "新北":"新北市",
+    "桃園":"桃園市",
+    "臺中":"臺中市",
+    "臺南":"臺南市",
+    "高雄":"高雄市",
+    "基隆":"基隆市",
+    "新竹":"新竹市",
+    "嘉義":"嘉義市"
+    }
 
-        if city in ["臺北","新北","桃園","臺中","臺南","高雄","基隆","新竹","嘉義"]:
-            city+="市"
-        else:
-            city+="縣"
+    if city in city_map:
+        city=city_map[city]
+
+    elif not city.endswith("市") and not city.endswith("縣"):
+        city+="市"
 
     url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
@@ -56,7 +68,12 @@ def weather():
         r=requests.get(url,params=params)
         data=r.json()
 
-        location=data["records"]["location"][0]
+        locations=data.get("records",{}).get("location",[])
+
+        if not locations:
+            raise Exception("No weather data")
+
+        location=locations[0]
 
         wx_data=location["weatherElement"][0]["time"]
         rain_data=location["weatherElement"][1]["time"]
@@ -89,8 +106,8 @@ def weather():
             humidity.append(60)
             times.append(t[11:16])
 
-    except:
-        pass
+    except Exception as e:
+        print("Weather API error:",e)
 
     return render_template(
         "result.html",
