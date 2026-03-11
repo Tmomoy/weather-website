@@ -39,7 +39,23 @@
 {% endfor %}
 
 </div>
+<h3>📅 未來7天</h3>
 
+<div class="forecast">
+
+{% for f in forecast7 %}
+
+<div class="card">
+
+<div>{{f.day}}</div>
+<div>{{f.wx}}</div>
+<div>{{f.temp}}°C</div>
+
+</div>
+
+{% endfor %}
+
+</div>
 
 <h3>📊 天氣圖</h3>
 

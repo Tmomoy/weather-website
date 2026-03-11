@@ -7,10 +7,9 @@ urllib3.disable_warnings()
 
 app = Flask(__name__)
 
-CWA_KEY = "CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
+CWA_KEY="CWA-163D1E42-4393-42FE-8302-6E96BAB2974A"
 
-# 22縣市
-CITIES = [
+CITIES=[
 "臺北市","新北市","桃園市","臺中市","臺南市","高雄市",
 "基隆市","新竹市","嘉義市",
 "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣",
@@ -37,6 +36,7 @@ def weather():
     weather={"city":city,"wx":"--","temp":"--","rain":"--"}
 
     forecast=[]
+    forecast7=[]
     temps=[]
     rains=[]
     humidity=[]
@@ -44,6 +44,7 @@ def weather():
 
     try:
 
+        # 36小時預報
         url="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
 
         params={
@@ -51,8 +52,7 @@ def weather():
             "locationName":city
         }
 
-        # 唯一修改的地方
-        r=requests.get(url,params=params,timeout=10,verify=False)
+        r=requests.get(url,params=params,verify=False,timeout=10)
 
         data=r.json()
 
@@ -84,13 +84,42 @@ def weather():
             humidity.append(60)
             times.append(t)
 
-    except:
-        pass
+
+        # 7天預報
+        url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
+
+        params7={
+            "Authorization":CWA_KEY,
+            "locationName":city
+        }
+
+        r7=requests.get(url7,params=params7,verify=False,timeout=10)
+
+        data7=r7.json()
+
+        loc=data7["records"]["locations"][0]["location"][0]
+
+        wx7=loc["weatherElement"][6]["time"]
+        temp7=loc["weatherElement"][12]["time"]
+
+        for i in range(7):
+
+            day=wx7[i]["startTime"][5:10]
+
+            forecast7.append({
+                "day":day,
+                "wx":wx7[i]["elementValue"][0]["value"],
+                "temp":temp7[i]["elementValue"][0]["value"]
+            })
+
+    except Exception as e:
+        print(e)
 
     return render_template(
         "result.html",
         weather=weather,
         forecast=forecast,
+        forecast7=forecast7,
         temps=temps,
         rains=rains,
         humidity=humidity,
