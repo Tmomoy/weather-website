@@ -46,58 +46,57 @@ def weather():
         "city":city,
         "wx":"查詢不到資料",
         "temp":"--",
-        "rain":"--"
+        "rain":"--",
+        "icon":"☁"
     }
 
+    forecast=[]
     temps=[]
     rains=[]
     humidity=[]
     times=[]
-    forecast=[]
 
     try:
 
         r=requests.get(url,params=params,verify=False,timeout=10)
         data=r.json()
 
-        locations=data["records"]["location"]
+        location=data["records"]["location"][0]
 
-        if locations:
+        wx_data=location["weatherElement"][0]["time"]
+        rain_data=location["weatherElement"][1]["time"]
+        temp_data=location["weatherElement"][2]["time"]
 
-            location=locations[0]
+        weather={
+            "city":city,
+            "wx":wx_data[0]["parameter"]["parameterName"],
+            "temp":temp_data[0]["parameter"]["parameterName"],
+            "rain":rain_data[0]["parameter"]["parameterName"],
+            "icon":get_icon(wx_data[0]["parameter"]["parameterName"])
+        }
 
-            wx_data=location["weatherElement"][0]["time"]
-            rain_data=location["weatherElement"][1]["time"]
-            temp_data=location["weatherElement"][2]["time"]
+        for i in range(len(temp_data)):
 
-            weather={
-                "city":city,
-                "wx":wx_data[0]["parameter"]["parameterName"],
-                "temp":temp_data[0]["parameter"]["parameterName"],
-                "rain":rain_data[0]["parameter"]["parameterName"]
-            }
+            time=temp_data[i]["startTime"][11:16]
 
-            for i in range(len(temp_data)):
+            temp=temp_data[i]["parameter"]["parameterName"]
+            rain=rain_data[i]["parameter"]["parameterName"]
+            wx=wx_data[i]["parameter"]["parameterName"]
 
-                time=temp_data[i]["startTime"][11:16]
+            forecast.append({
+                "time":time,
+                "temp":temp,
+                "rain":rain,
+                "wx":wx
+            })
 
-                temp=temp_data[i]["parameter"]["parameterName"]
-                rain=rain_data[i]["parameter"]["parameterName"]
-                wx=wx_data[i]["parameter"]["parameterName"]
-
-                forecast.append({
-                    "time":time,
-                    "temp":temp,
-                    "rain":rain,
-                    "wx":wx
-                })
-
-                temps.append(int(temp))
-                rains.append(int(rain))
-                humidity.append(60)
-                times.append(time)
+            temps.append(int(temp))
+            rains.append(int(rain))
+            humidity.append(60)
+            times.append(time)
 
     except Exception as e:
+
         print("Weather API error:",e)
 
     return render_template(
@@ -111,6 +110,22 @@ def weather():
     )
 
 
+def get_icon(wx):
+
+    if "雨" in wx:
+        return "🌧"
+
+    if "雲" in wx:
+        return "☁"
+
+    if "晴" in wx:
+        return "☀"
+
+    return "🌤"
+
+
 if __name__=="__main__":
+
     port=int(os.environ.get("PORT",10000))
+
     app.run(host="0.0.0.0",port=port)
