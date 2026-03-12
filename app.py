@@ -3,7 +3,6 @@ import requests
 import os
 import urllib3
 from datetime import datetime
-
 from taiwan_districts import districts, district_city_map
 
 urllib3.disable_warnings()
@@ -107,62 +106,62 @@ def weather():
             times.append(time)
 
         # ======================
-# 未來7天預報
-# ======================
+        # 未來7天預報
+        # ======================
 
-url7="https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
+        url7 = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-091"
 
-params7={
-    "Authorization":CWA_KEY,
-    "locationName":district
-}
+        params7 = {
+            "Authorization": CWA_KEY,
+            "locationName": district
+        }
 
-r7=requests.get(url7,params=params7,verify=False)
-data7=r7.json()
+        r7 = requests.get(url7, params=params7, verify=False)
+        data7 = r7.json()
 
-locations=data7.get("records",{}).get("locations",[])
+        locations = data7.get("records", {}).get("locations", [])
 
-if locations:
+        if locations:
 
-    locs=locations[0].get("location",[])
+            locs = locations[0].get("location", [])
 
-    for loc in locs:
+            for loc in locs:
 
-        if loc["locationName"]==district:
+                if loc["locationName"] == district:
 
-            elements=loc["weatherElement"]
+                    elements = loc["weatherElement"]
 
-            wx_times=[]
-            temp_times=[]
+                    wx_times = []
+                    temp_times = []
 
-            for e in elements:
+                    for e in elements:
 
-                if e["elementName"]=="Wx":
-                    wx_times=e["time"]
+                        if e["elementName"] == "Wx":
+                            wx_times = e["time"]
 
-                if e["elementName"]=="T":
-                    temp_times=e["time"]
+                        if e["elementName"] == "T":
+                            temp_times = e["time"]
 
-            seen=set()
+                    seen = set()
 
-            for i in range(len(wx_times)):
+                    for i in range(len(wx_times)):
 
-                day=wx_times[i]["startTime"][5:10]
+                        day = wx_times[i]["startTime"][5:10]
 
-                if day not in seen:
+                        if day not in seen:
 
-                    forecast7.append({
-                        "day":day,
-                        "wx":wx_times[i]["elementValue"][0]["value"],
-                        "temp":temp_times[i]["elementValue"][0]["value"]
-                    })
+                            forecast7.append({
+                                "day": day,
+                                "wx": wx_times[i]["elementValue"][0]["value"],
+                                "temp": temp_times[i]["elementValue"][0]["value"]
+                            })
 
-                    seen.add(day)
+                            seen.add(day)
 
-                if len(forecast7)==7:
+                        if len(forecast7) == 7:
+                            break
+
                     break
-
-            break
 
     except Exception as e:
 
