@@ -43,28 +43,7 @@
 </div>
 
 
-<h3>📅 未來7天</h3>
 
-<div class="forecast">
-
-{% for f in forecast7 %}
-
-<div class="card">
-
-<div>{{f.day}}</div>
-
-{% if "雨" in f.wx %}
-<img src="https://cdn-icons-png.flaticon.com/512/3351/3351979.png" width="40">
-{% elif "雲" in f.wx %}
-<img src="https://cdn-icons-png.flaticon.com/512/414/414825.png" width="40">
-{% else %}
-<img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" width="40">
-{% endif %}
-
-<div>{{f.wx}}</div>
-<div>{{f.temp}}°C</div>
-
-</div>
 
 {% endfor %}
 
@@ -81,7 +60,7 @@
 
 <br><br>
 
-<a href="/"><button></button></a>
+<a href="/"><button>返回</button></a>
 
 </div>
 
