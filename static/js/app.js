@@ -5,6 +5,7 @@
   const locationStatus = document.querySelector("[data-location-status]");
   const radar = document.querySelector("[data-radar]");
   const clock = document.querySelector("[data-clock]");
+  const results = document.querySelector("[data-weather-results]");
 
   const updateClock = () => {
     if (!clock) return;
@@ -15,11 +16,82 @@
   updateClock();
   window.setInterval(updateClock, 30000);
 
-  form?.addEventListener("submit", () => {
+  form?.addEventListener("submit", async (event) => {
+    if (!results || !input.value.trim()) return;
+    event.preventDefault();
     const button = form.querySelector("button[type='submit']");
     button.disabled = true;
     button.textContent = "正在查詢…";
+    locationStatus.classList.remove("is-error");
+    locationStatus.textContent = "正在取得最新預報…";
+    try {
+      const response = await fetch(`/api/v1/weather?city=${encodeURIComponent(input.value.trim())}`, {
+        headers: { Accept: "application/json" },
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error?.message || "暫時無法取得天氣。請稍後再試。");
+      renderWeather(payload.data);
+      locationStatus.textContent = `已更新 ${payload.data.location} 天氣`;
+      history.replaceState(null, "", `/?city=${encodeURIComponent(input.value.trim())}`);
+    } catch (error) {
+      locationStatus.textContent = error.message;
+      locationStatus.classList.add("is-error");
+    } finally {
+      button.disabled = false;
+      button.innerHTML = "查看天氣 <span aria-hidden='true'>→</span>";
+    }
   });
+
+  const valueOrDash = (value, suffix = "") => value == null ? "—" : `${value}${suffix}`;
+  const weatherIcon = (summary = "") => {
+    if (summary.includes("雷")) return "⛈";
+    if (summary.includes("雨")) return "☂";
+    if (summary.includes("晴") && (summary.includes("雲") || summary.includes("陰"))) return "⛅";
+    if (summary.includes("晴")) return "☀";
+    return "☁";
+  };
+  const formatDateTime = (value) => new Intl.DateTimeFormat("zh-TW", {
+    month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
+  }).format(new Date(value));
+  const setText = (selector, value) => {
+    const node = results.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+
+  const renderWeather = (report) => {
+    const current = report.current;
+    setText("[data-result-location]", report.location);
+    setText("[data-result-updated]", `${formatDateTime(report.updated_at)} 更新`);
+    setText("[data-result-icon]", weatherIcon(current.summary));
+    setText("[data-result-temperature]", valueOrDash(current.max_temp_c ?? current.min_temp_c, "°"));
+    setText("[data-result-summary]", current.summary);
+    setText("[data-result-min]", valueOrDash(current.min_temp_c, "°"));
+    setText("[data-result-max]", valueOrDash(current.max_temp_c, "°"));
+    setText("[data-result-rain]", valueOrDash(current.rain_probability, "%"));
+
+    const detail = results.querySelector("[data-result-detail]");
+    detail.href = `/weather?city=${encodeURIComponent(report.location)}`;
+    const hourly = results.querySelector("[data-result-hourly]");
+    hourly.replaceChildren(...report.hourly.map((period) => {
+      const card = document.createElement("article");
+      card.className = "api-hourly-card";
+      const time = document.createElement("time");
+      time.dateTime = period.start_time;
+      time.textContent = formatDateTime(period.start_time);
+      const icon = document.createElement("span");
+      icon.className = "api-hourly-icon";
+      icon.textContent = weatherIcon(period.summary);
+      icon.setAttribute("aria-hidden", "true");
+      const summary = document.createElement("p");
+      summary.textContent = period.summary;
+      const metrics = document.createElement("div");
+      metrics.textContent = `${valueOrDash(period.min_temp_c, "°")} / ${valueOrDash(period.max_temp_c, "°")} · 降雨 ${valueOrDash(period.rain_probability, "%")}`;
+      card.append(time, icon, summary, metrics);
+      return card;
+    }));
+    results.hidden = false;
+    results.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   geolocateButton?.addEventListener("click", () => {
     if (!navigator.geolocation) {
