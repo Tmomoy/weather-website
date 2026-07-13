@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}暫時無法取得天氣｜島嶼天氣{% endblock %}
+{% block content %}
+<section class="error-page shell">
+  <div class="error-code">503</div>
+  <p class="eyebrow">WEATHER ON PAUSE</p>
+  <h1>天空稍微失聯了</h1>
+  <p>{{ message }}</p>
+  <div class="error-actions">
+    {% if query %}<a class="button button-primary" href="{{ url_for('weather.weather', city=query) }}">再試一次</a>{% endif %}
+    <a class="button button-secondary" href="{{ url_for('weather.home') }}">返回首頁</a>
+  </div>
+</section>
+{% endblock %}
