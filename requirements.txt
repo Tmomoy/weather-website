@@ -1,3 +1,7 @@
-flask
-requests
-gunicorn
+Flask>=3.0,<4
+requests>=2.32,<3
+gunicorn>=22,<24
+python-dotenv>=1.0,<2
+
+# Development and tests
+pytest>=8,<10

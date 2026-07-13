@@ -1,144 +1,96 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% macro weather_icon(summary) -%}
+  {%- if '雷' in summary -%}⛈
+  {%- elif '雨' in summary -%}☂
+  {%- elif '晴' in summary and ('雲' in summary or '陰' in summary) -%}⛅
+  {%- elif '晴' in summary -%}☀
+  {%- else -%}☁
+  {%- endif -%}
+{%- endmacro %}
+{% block title %}{{ report.location }}天氣｜島嶼天氣{% endblock %}
+{% block body_class %}{% if '雨' in report.current.summary or '雷' in report.current.summary %}weather-rain{% elif '晴' in report.current.summary %}weather-sun{% else %}weather-cloud{% endif %}{% endblock %}
+{% block content %}
+<div class="result-shell shell">
+  <nav class="result-nav" aria-label="天氣查詢">
+    <a href="{{ url_for('weather.home') }}">← 返回查詢</a>
+    <form action="{{ url_for('weather.weather') }}" method="get" class="mini-search">
+      <label class="sr-only" for="resultCity">查詢其他縣市</label>
+      <input id="resultCity" name="city" placeholder="查詢其他縣市" required>
+      <button type="submit" aria-label="送出查詢">→</button>
+    </form>
+  </nav>
 
-<head>
+  {% if report.warnings %}
+  <div class="notice" role="status">{{ report.warnings|join(' ') }}</div>
+  {% endif %}
 
-<meta charset="UTF-8">
-<title>天氣結果</title>
+  <section class="current-weather">
+    <div class="weather-orbit" aria-hidden="true"><span></span><span></span></div>
+    <div class="location-block">
+      <p class="eyebrow">CURRENT FORECAST</p>
+      <h1>{{ report.location }}</h1>
+      <p><i></i>{{ report.updated_at.strftime('%Y/%m/%d %H:%M') }} 更新</p>
+    </div>
+    <div class="weather-symbol" aria-hidden="true">{{ weather_icon(report.current.summary) }}</div>
+    <div class="current-temp">
+      {% set current_temp = report.current.max_temp_c if report.current.max_temp_c is not none else report.current.min_temp_c %}
+      <strong>{{ current_temp if current_temp is not none else '--' }}<sup>°</sup></strong>
+      <span>{{ report.current.summary }}</span>
+    </div>
+    <div class="metric-grid">
+      <div><span>最低溫</span><strong>{{ report.current.min_temp_c if report.current.min_temp_c is not none else '--' }}°</strong></div>
+      <div><span>最高溫</span><strong>{{ report.current.max_temp_c if report.current.max_temp_c is not none else '--' }}°</strong></div>
+      <div><span>降雨機率</span><strong>{{ report.current.rain_probability if report.current.rain_probability is not none else '--' }}%</strong></div>
+    </div>
+  </section>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% if report.hourly %}
+  <section class="content-section" aria-labelledby="hourly-title">
+      <div class="section-heading"><div><p class="eyebrow">NEXT 36 HOURS</p><h2 id="hourly-title">未來 36 小時</h2></div><p>掌握下一段行程的溫度與降雨</p></div>
+    <div class="hourly-grid">
+      {% for item in report.hourly %}
+      <article class="forecast-card">
+        <time datetime="{{ item.start_time.isoformat() }}">{{ item.start_time.strftime('%m/%d') }}<small>{{ item.start_time.strftime('%H:%M') }}</small></time>
+        <span class="small-weather-icon" aria-hidden="true">{{ weather_icon(item.summary) }}</span>
+        <p>{{ item.summary }}</p>
+        <strong>
+          {{ item.min_temp_c if item.min_temp_c is not none else '--' }}°
+          <span>/</span>
+          {{ item.max_temp_c if item.max_temp_c is not none else '--' }}°
+        </strong>
+        <span class="rain">⌁ {{ item.rain_probability if item.rain_probability is not none else '--' }}%</span>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h2>{{weather.city}}</h2>
-
-<p>📅 今天日期：{{today}}</p>
-<p>☁ {{weather.wx}}</p>
-<p>🌡 {{weather.temp}}°C</p>
-<p>🌧 {{weather.rain}}%</p>
-
-<h3>📅 未來36小時</h3>
-
-<div class="forecast">
-
-{% for f in forecast %}
-
-<div class="card">
-<div>日期:{{f.date}}</div>
-<div>時間:{{f.time}}</div>
-<div>溫度:{{f.temp}}°C</div>
-<div>降雨機率:{{f.rain}}%</div>
-
+  {% if report.daily %}
+  <section class="content-section" aria-labelledby="weekly-title">
+      <div class="section-heading"><div><p class="eyebrow">7-DAY OUTLOOK</p><h2 id="weekly-title">一週天氣趨勢</h2></div><p>藍線低溫 · 金線高溫</p></div>
+    <div class="weekly-layout">
+      <div class="weekly-list">
+        {% for item in report.daily %}
+        <article class="weekly-row">
+          <time datetime="{{ item.start_time.date().isoformat() }}">{{ item.start_time.strftime('%m/%d') }}</time>
+          <span class="weekly-summary"><i aria-hidden="true">{{ weather_icon(item.summary) }}</i>{{ item.summary }}</span>
+          <span class="weekly-rain">降雨 {{ item.rain_probability if item.rain_probability is not none else '--' }}%</span>
+          <strong>{{ item.min_temp_c if item.min_temp_c is not none else '--' }}° <b>{{ item.max_temp_c if item.max_temp_c is not none else '--' }}°</b></strong>
+        </article>
+        {% endfor %}
+      </div>
+      <div class="chart-card">
+        <div><p class="eyebrow">TEMPERATURE</p><h3>高低溫變化</h3></div>
+        <canvas id="temperatureChart" width="640" height="320" aria-label="一週高低溫折線圖"></canvas>
+      </div>
+    </div>
+  </section>
+  <script id="forecast-data" type="application/json">{{ {
+    'labels': report.daily|map(attribute='start_time')|map('string')|list,
+    'mins': report.daily|map(attribute='min_temp_c')|list,
+    'maxs': report.daily|map(attribute='max_temp_c')|list
+  }|tojson }}</script>
+  {% endif %}
 </div>
-
-{% endfor %}
-
-</div>
-
-
-
-
-<div class="forecast">
-
-{% for f in forecast7 %}
-
-<div class="card">
-
-<div>{{f.day}}</div>
-
-{% if "雨" in f.wx %}
-<img src="https://cdn-icons-png.flaticon.com/512/3351/3351979.png" width="40">
-{% elif "雲" in f.wx %}
-<img src="https://cdn-icons-png.flaticon.com/512/414/414825.png" width="40">
-{% else %}
-<img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" width="40">
-{% endif %}
-
-<div>{{f.wx}}</div>
-<div>{{f.temp}}°C</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-
-<h3>📊 天氣圖</h3>
-
-<button onclick="showTemp()">溫度</button>
-<button onclick="showRain()">降雨</button>
-<button onclick="showHum()">濕度</button>
-
-<canvas id="chart"></canvas>
-
-<br><br>
-
-<a href="/"><button>返回</button></a>
-
-</div>
-
-<script>
-
-const times={{times|tojson}}
-const temps={{temps|tojson}}
-const rains={{rains|tojson}}
-const hum={{humidity|tojson}}
-
-let chart
-
-function draw(data,label,color){
-
-const ctx=document.getElementById("chart")
-
-if(chart) chart.destroy()
-
-chart=new Chart(ctx,{
-type:'line',
-
-data:{
-labels:times,
-datasets:[{
-label:label,
-data:data,
-borderColor:color,
-backgroundColor:color,
-tension:0.3
-}]
-},
-
-plugins:[ChartDataLabels],
-
-options:{
-plugins:{
-datalabels:{
-color:"white",
-align:"top",
-font:{
-weight:"bold"
-}
-}
-}
-}
-
-})
-
-}
-
-function showTemp(){draw(temps,"溫度","#ff5733")}
-function showRain(){draw(rains,"降雨","#3498db")}
-function showHum(){draw(hum,"濕度","#2ecc71")}
-
-showTemp()
-
-</script>
-
-</body>
-</html>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/chart.js') }}" defer></script>{% endblock %}

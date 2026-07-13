@@ -1,14 +1,11 @@
 {
-"name":"Taiwan Weather",
-"short_name":"Weather",
-"display":"standalone",
-"start_url":"/",
-"background_color":"#4facfe",
-"icons":[
-{
-"src":"https://cdn-icons-png.flaticon.com/512/869/869869.png",
-"sizes":"192x192",
-"type":"image/png"
-}
-]
+  "name": "島嶼天氣｜臺灣天氣預報",
+  "short_name": "島嶼天氣",
+  "description": "臺灣各縣市 36 小時與一週天氣預報",
+  "lang": "zh-Hant",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071b2e",
+  "theme_color": "#071b2e"
 }

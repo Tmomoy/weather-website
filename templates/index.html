@@ -1,42 +1,61 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
+{% block title %}島嶼天氣｜臺灣天氣預報{% endblock %}
+{% block body_class %}page-home{% endblock %}
+{% block content %}
+<section class="hero shell">
+  <div class="hero-copy">
+    <p class="eyebrow">TAIWAN WEATHER</p>
+    <h1>出門之前，<br><span>先看看天空。</span></h1>
+    <p class="hero-lead">從城市晨光到午後雷陣雨，快速掌握臺灣各縣市 36 小時與一週預報，讓每一次出發更從容。</p>
 
-<head>
+    <form class="search-panel" action="{{ url_for('weather.weather') }}" method="get" data-weather-form>
+      <label for="cityInput">查詢地區</label>
+      <div class="search-row">
+        <div class="input-wrap">
+          <span class="pin" aria-hidden="true">⌖</span>
+          <input id="cityInput" name="city" list="locations" value="{{ query|default('') }}"
+                 placeholder="輸入縣市，例如：臺北市" autocomplete="off" required>
+          <datalist id="locations">
+            {% for location in locations %}<option value="{{ location }}">{% endfor %}
+          </datalist>
+        </div>
+        <button class="button button-primary" type="submit">查看天氣 <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="search-actions">
+        <button class="text-button" type="button" data-geolocate>
+          <span aria-hidden="true">◎</span> 使用目前位置
+        </button>
+        <span class="status-text" data-location-status aria-live="polite"></span>
+      </div>
+      {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+    </form>
+    <div class="quick-cities" aria-label="熱門城市快速查詢">
+      <span>熱門</span>
+      {% for city in ['臺北市', '臺中市', '臺南市', '高雄市'] %}
+      <a href="{{ url_for('weather.weather', city=city) }}">{{ city[:-1] }}</a>
+      {% endfor %}
+    </div>
+  </div>
 
-<meta charset="UTF-8">
-<title>台灣天氣系統</title>
+  <aside class="radar-card" aria-labelledby="radar-title">
+    <div class="card-heading">
+      <div><p class="eyebrow">LIVE RADAR</p><h2 id="radar-title">即時雷達回波</h2></div>
+      <span class="live-badge"><i></i> 即時</span>
+    </div>
+    <div class="radar-frame">
+      <img data-radar src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png"
+           alt="中央氣象署臺灣雷達回波圖" loading="eager">
+      <div class="radar-scan" aria-hidden="true"></div>
+      <span class="radar-coordinate radar-coordinate-top">25°N</span>
+      <span class="radar-coordinate radar-coordinate-bottom">22°N</span>
+    </div>
+    <div class="radar-footer"><p class="radar-note">雷達圖每 2 分鐘自動更新</p><span>120°E — 122°E</span></div>
+  </aside>
+</section>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>🌤 台灣天氣系統</h1>
-
-<form action="/weather" method="post">
-
-<input id="cityInput" name="city" placeholder="輸入縣市">
-
-<button type="submit">查詢</button>
-<button type="button" onclick="gps()">📍 GPS</button>
-
-</form>
-
-
-
-
-
-<h3>🌧 雷達動畫</h3>
-
-<img id="radar" src="https://www.cwa.gov.tw/Data/radar/CV1_3600.png">
-
-</div>
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-
-</body>
-</html>
+<section class="feature-strip shell" aria-label="服務特色">
+  <article><span>01</span><div><h2>36 小時</h2><p>近期逐時趨勢</p></div><i>↗</i></article>
+  <article><span>02</span><div><h2>一週預報</h2><p>提前安排旅程</p></div><i>↗</i></article>
+  <article><span>03</span><div><h2>全臺縣市</h2><p>快速地區搜尋</p></div><i>↗</i></article>
+</section>
+{% endblock %}
