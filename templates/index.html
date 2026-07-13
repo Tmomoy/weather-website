@@ -53,6 +53,30 @@
   </aside>
 </section>
 
+<section class="api-results shell" data-weather-results hidden aria-live="polite">
+  <div class="api-current">
+    <div>
+      <p class="eyebrow">LIVE FORECAST</p>
+      <h2 data-result-location>—</h2>
+      <p class="api-updated" data-result-updated></p>
+    </div>
+    <div class="api-weather-icon" data-result-icon aria-hidden="true">☀</div>
+    <div class="api-temperature"><strong data-result-temperature>—</strong><span data-result-summary>—</span></div>
+    <div class="api-metrics">
+      <div><span>最低溫</span><strong data-result-min>—</strong></div>
+      <div><span>最高溫</span><strong data-result-max>—</strong></div>
+      <div><span>降雨機率</span><strong data-result-rain>—</strong></div>
+    </div>
+  </div>
+  <div class="api-forecast-section">
+    <div class="section-heading">
+      <div><p class="eyebrow">NEXT 36 HOURS</p><h2>未來 36 小時</h2></div>
+      <a data-result-detail href="#">查看完整一週預報 →</a>
+    </div>
+    <div class="api-hourly" data-result-hourly></div>
+  </div>
+</section>
+
 <section class="feature-strip shell" aria-label="服務特色">
   <article><span>01</span><div><h2>36 小時</h2><p>近期逐時趨勢</p></div><i>↗</i></article>
   <article><span>02</span><div><h2>一週預報</h2><p>提前安排旅程</p></div><i>↗</i></article>

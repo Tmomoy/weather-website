@@ -105,6 +105,7 @@ input:focus { border-color: rgba(241, 201, 107, .75); box-shadow: 0 0 0 4px rgba
 .text-button { border: 0; background: none; color: #9dc7d6; padding: 10px 2px; cursor: pointer; }
 .text-button:hover { color: white; }
 .status-text { color: var(--muted); font-size: 12px; }
+.status-text.is-error { color: var(--danger); }
 .form-error { margin: 2px 0 0; color: var(--danger); font-size: 14px; }
 .quick-cities { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
 .quick-cities > span { margin-right: 3px; color: #657f90; font-size: 11px; letter-spacing: .12em; }
@@ -135,6 +136,30 @@ input:focus { border-color: rgba(241, 201, 107, .75); box-shadow: 0 0 0 4px rgba
 .feature-strip p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
 .feature-strip article i { margin-left: auto; color: #557081; font-style: normal; transition: transform .2s, color .2s; }
 .feature-strip article:hover i { color: var(--accent); transform: translate(3px, -3px); }
+
+.api-results { scroll-margin-top: 24px; padding: 34px 0 52px; }
+.api-results[hidden] { display: none; }
+.api-current { position: relative; overflow: hidden; display: grid; grid-template-columns: 1.2fr .45fr .8fr 1.2fr; gap: 28px; align-items: center; padding: 38px 42px; border: 1px solid rgba(172,218,233,.18); border-radius: 26px; background: linear-gradient(135deg, rgba(18,62,84,.92), rgba(8,29,46,.94)); box-shadow: var(--shadow); animation: result-in .45s ease both; }
+.api-current::after { content: "API / LIVE"; position: absolute; top: 18px; right: 20px; color: rgba(167,206,220,.18); font: 700 9px/1 monospace; letter-spacing: .16em; }
+.api-current h2 { margin: 0; font-size: clamp(32px, 5vw, 52px); letter-spacing: -.04em; }
+.api-updated { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+.api-weather-icon { font-size: 58px; text-align: center; }
+.api-temperature { display: flex; flex-direction: column; }
+.api-temperature strong { font-size: 68px; line-height: 1; font-weight: 300; letter-spacing: -.07em; }
+.api-temperature span { color: #c2d2da; font-size: 13px; }
+.api-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; overflow: hidden; border-radius: 14px; background: var(--line); }
+.api-metrics div { padding: 13px 12px; background: rgba(4,22,35,.74); text-align: center; }
+.api-metrics span { display: block; color: var(--muted); font-size: 10px; }
+.api-metrics strong { font-size: 18px; }
+.api-forecast-section { margin-top: 28px; }
+.api-forecast-section .section-heading a { color: var(--accent); font-size: 12px; }
+.api-hourly { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.api-hourly-card { display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; padding: 20px; border: 1px solid var(--line); border-radius: 17px; background: rgba(9,34,52,.66); }
+.api-hourly-card time { color: var(--muted); font-size: 11px; }
+.api-hourly-icon { grid-row: span 2; font-size: 30px; }
+.api-hourly-card p { margin: 0; font-size: 14px; }
+.api-hourly-card div { grid-column: 1 / -1; margin-top: 8px; color: #8eb1c0; font-size: 11px; }
+@keyframes result-in { from { opacity: 0; transform: translateY(14px) scale(.99); } }
 
 .result-shell { padding: 34px 0 80px; }
 .result-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
@@ -209,6 +234,8 @@ main { animation: page-in .55s cubic-bezier(.22,.75,.25,1) both; }
   .current-weather { grid-template-columns: 1fr .55fr 1fr; }
   .metric-grid { grid-column: 1 / -1; grid-template-columns: repeat(3, 1fr); }
   .hourly-grid { grid-template-columns: 1fr; }
+  .api-current { grid-template-columns: 1fr .5fr 1fr; }
+  .api-metrics { grid-column: 1 / -1; }
 }
 
 @media (max-width: 800px) {
@@ -219,6 +246,10 @@ main { animation: page-in .55s cubic-bezier(.22,.75,.25,1) both; }
   .feature-strip { grid-template-columns: 1fr; }
   .feature-strip article { border-right: 0; border-bottom: 1px solid var(--line); padding-inline: 0; }
   .weekly-layout { grid-template-columns: 1fr; }
+  .api-current { grid-template-columns: 1fr 1fr; padding: 28px; }
+  .api-temperature { grid-column: 1 / -1; }
+  .api-metrics { grid-template-columns: repeat(3, 1fr); }
+  .api-hourly { grid-template-columns: 1fr; }
   .current-weather { grid-template-columns: 1fr 1fr; padding: 30px; }
   .weather-symbol { text-align: right; }
   .current-temp { grid-column: 1 / -1; }
@@ -244,6 +275,10 @@ main { animation: page-in .55s cubic-bezier(.22,.75,.25,1) both; }
   .weekly-row { grid-template-columns: .7fr 1.8fr .8fr; padding-inline: 14px; }
   .weekly-rain { display: none; }
   .section-heading > p { display: none; }
+  .api-current { padding: 22px; gap: 18px; }
+  .api-weather-icon { text-align: right; }
+  .api-temperature strong { font-size: 60px; }
+  .api-metrics { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
